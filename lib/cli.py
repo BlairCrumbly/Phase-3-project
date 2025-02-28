@@ -1,4 +1,7 @@
 # lib/cli.py
+from models.company import Company
+
+Company.create_table()
 
 from helpers import (
     exit_program,
