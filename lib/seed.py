@@ -19,23 +19,23 @@ def seed_data():
     """Seed the database with sample data."""
     # Seed Companies
     company1 = Company(name="TechCorp", website="https://techcorp.com", contact_info="contact@techcorp.com")
-    company1.save()  # Save to DB
+    company1.save()
     
     company2 = Company(name="WebWorks", website="https://webworks.com", contact_info="info@webworks.com")
     company2.save()
 
     # Seed Tags
     location_tag1 = Tag(name="remote", tag_type="location")
-    location_tag1.save()  # Save tag to DB
+    location_tag1.save()
 
     location_tag2 = Tag(name="hybrid", tag_type="location")
-    location_tag2.save()  # Save tag to DB
+    location_tag2.save() 
 
     length_tag1 = Tag(name="full-time", tag_type="length")
-    length_tag1.save()  # Save tag to DB
+    length_tag1.save()
 
     length_tag2 = Tag(name="part-time", tag_type="length")
-    length_tag2.save()  # Save tag to DB
+    length_tag2.save()
 
     # Seed Job Applications
     job_app1 = JobApplication(job_title="Software Engineer", company_id=company1.id, description="Develop software.", date_applied="2025-02-28", last_follow_up="2025-03-05", status="applied")
@@ -81,7 +81,9 @@ def test_data():
         print(f"Job Application ID: {tag.post_id}, Tag ID: {tag.tag_id}")
 
 if __name__ == "__main__":
+
     drop_tables()
+    
     # Create tables
     create_tables()
 
