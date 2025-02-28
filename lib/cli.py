@@ -1,9 +1,11 @@
 # lib/cli.py
 from models.company import Company
 from models.job_application import JobApplication
+from models.tag import Tag
 
 Company.create_table()
 JobApplication.create_table()
+Tag.create_table()
 
 from helpers import (
     exit_program,
@@ -32,6 +34,3 @@ def menu():
 if __name__ == "__main__":
     main()
 
-
-
-hi
