@@ -11,10 +11,10 @@ class Tag:
         CURSOR.execute("""
         CREATE TABLE IF NOT EXISTS tags (
             tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE NOT NULL
+            length_name TEXT CHECK(name IN ('full-time','part-time',))
+            location_name TEXT CHECK(name IN ('remote','hybrid','in-person'))
         )
         """)
-        CONN.commit()
 
     def save(self):
         """Save a new tag to the database."""
@@ -27,3 +27,5 @@ class Tag:
         """Retrieve all tags from the database."""
         CURSOR.execute("SELECT * FROM tags")
         return [cls(id=row[0], name=row[1]) for row in CURSOR.fetchall()]
+
+    #DROP TABLE

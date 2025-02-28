@@ -11,6 +11,7 @@ class JobApplication:
         self.status = status
 
     @classmethod
+    #try except
     def create_table(cls):
         """Create the job_applications table."""
         CURSOR.execute("""
@@ -22,10 +23,9 @@ class JobApplication:
             date_applied DATE,
             last_follow_up DATE,
             status TEXT CHECK(status IN ('applied', 'pending', 'rejected', 'offer')),
-            FOREIGN KEY (company_id) REFERENCES companies(company_id)
+            FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE cascade
         )
         """)
-        CONN.commit()
 
     def save(self):
         """Save a new job application to the database."""
@@ -35,3 +35,5 @@ class JobApplication:
         """, (self.job_title, self.company_id, self.description, self.date_applied, self.last_follow_up, self.status))
         CONN.commit()
         self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+
+        #DROP TABLE

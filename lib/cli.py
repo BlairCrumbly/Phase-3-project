@@ -2,10 +2,8 @@
 from models.company import Company
 from models.job_application import JobApplication
 from models.tag import Tag
+from models.job_application_tag import JobApplicationTag
 
-Company.create_table()
-JobApplication.create_table()
-Tag.create_table()
 
 from helpers import (
     exit_program,

@@ -9,17 +9,20 @@ class Company:
 
     @classmethod
     def create_table(cls):
+    #try except
         CURSOR.execute("""
         CREATE TABLE IF NOT EXISTS companies (
             company_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
+            name TEXT NOT NULL CHECK(LENGTH(name)>0),
             website TEXT,
             contact_info TEXT
         )
         """)
-        CONN.commit()
 
     def save(self):
         CURSOR.execute("INSERT INTO companies (name, website, contact_info) VALUES (?, ?, ?)",
                        (self.name, self.website, self.contact_info))
         CONN.commit()
+        self.id = CURSOR.lastrowid
+
+    #DROP TABLE
