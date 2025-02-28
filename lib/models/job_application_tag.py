@@ -24,7 +24,6 @@ class JobApplicationTag:
                 FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
             )
             """)
-            CONN.commit()
             print("Table 'job_application_tags' created successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")

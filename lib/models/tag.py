@@ -1,4 +1,5 @@
 from models import CONN, CURSOR
+import sqlite3
 
 class Tag:
     def __init__(self, name, id=None):
@@ -8,13 +9,17 @@ class Tag:
     @classmethod
     def create_table(cls):
         """Create the tags table."""
-        CURSOR.execute("""
-        CREATE TABLE IF NOT EXISTS tags (
-            tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            length_name TEXT CHECK(name IN ('full-time','part-time',))
-            location_name TEXT CHECK(name IN ('remote','hybrid','in-person'))
-        )
-        """)
+        try:
+            CURSOR.execute("""
+            CREATE TABLE IF NOT EXISTS tags (
+                tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                length_name TEXT CHECK(length_name IN ('full-time','part-time')),
+                location_name TEXT CHECK(location_name IN ('remote','hybrid','in-person'))
+            )
+            """)
+            print("Table 'tags' created successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
 
     def save(self):
         """Save a new tag to the database."""
