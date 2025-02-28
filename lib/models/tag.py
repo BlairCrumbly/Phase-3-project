@@ -33,4 +33,12 @@ class Tag:
         CURSOR.execute("SELECT * FROM tags")
         return [cls(id=row[0], name=row[1]) for row in CURSOR.fetchall()]
 
-    #DROP TABLE
+    @classmethod
+    def drop_table(cls):
+        """Drop the tags table."""
+        try:
+            CURSOR.execute("DROP TABLE IF EXISTS tags")
+            CONN.commit()
+            print("Table 'tags' dropped successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while dropping the table: {e}")
