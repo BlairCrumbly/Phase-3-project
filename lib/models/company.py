@@ -1,4 +1,5 @@
 from models import CONN, CURSOR
+import sqlite3
 
 class Company:
     def __init__(self, name, website, contact_info, id=None):
@@ -9,15 +10,19 @@ class Company:
 
     @classmethod
     def create_table(cls):
-    #try except
-        CURSOR.execute("""
-        CREATE TABLE IF NOT EXISTS companies (
-            company_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL CHECK(LENGTH(name)>0),
-            website TEXT,
-            contact_info TEXT
-        )
-        """)
+        try:
+            CURSOR.execute("""
+            CREATE TABLE IF NOT EXISTS companies (
+                company_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL CHECK(LENGTH(name) > 0),
+                website TEXT,
+                contact_info TEXT
+            )
+            """)
+            CONN.commit()
+            print("Table 'companies' created successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while creating the table: {e}")
 
     def save(self):
         CURSOR.execute("INSERT INTO companies (name, website, contact_info) VALUES (?, ?, ?)",
