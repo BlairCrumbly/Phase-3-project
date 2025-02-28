@@ -1,7 +1,9 @@
 # lib/cli.py
 from models.company import Company
+from models.job_application import JobApplication
 
 Company.create_table()
+JobApplication.create_table()
 
 from helpers import (
     exit_program,
