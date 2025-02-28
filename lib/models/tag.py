@@ -2,9 +2,10 @@ from models import CONN, CURSOR
 import sqlite3
 
 class Tag:
-    def __init__(self, name, id=None):
+    def __init__(self, name, tag_type, id=None):
         self.id = id
         self.name = name
+        self.tag_type = tag_type  # Store the tag type ('location' or 'length')
 
     @classmethod
     def create_table(cls):
@@ -13,25 +14,32 @@ class Tag:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS tags (
                 tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                length_name TEXT CHECK(length_name IN ('full-time','part-time')),
-                location_name TEXT CHECK(location_name IN ('remote','hybrid','in-person'))
+                name TEXT NOT NULL,  -- Name of the tag (e.g., 'remote', 'full-time')
+                tag_type TEXT CHECK(tag_type IN ('location', 'length')) NOT NULL  -- Type of the tag
             )
             """)
+            CONN.commit()
             print("Table 'tags' created successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
 
+
     def save(self):
         """Save a new tag to the database."""
-        CURSOR.execute("INSERT INTO tags (name) VALUES (?)", (self.name,))
-        CONN.commit()
-        self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+        try:
+            CURSOR.execute("INSERT INTO tags (name, tag_type) VALUES (?, ?)", (self.name, self.tag_type))
+            CONN.commit()
+            self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+            print(f"Tag '{self.name}' saved successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while saving the tag: {e}")
 
     @classmethod
     def get_all(cls):
         """Retrieve all tags from the database."""
         CURSOR.execute("SELECT * FROM tags")
-        return [cls(id=row[0], name=row[1]) for row in CURSOR.fetchall()]
+        return [cls(id=row[0], name=row[1], tag_type=row[2]) for row in CURSOR.fetchall()]
+
 
     @classmethod
     def drop_table(cls):

@@ -11,8 +11,9 @@ class JobApplication:
         self.last_follow_up = last_follow_up
         self.status = status
 
-    @classmethod
-    def create_table():
+    @classmethod  # Add the @classmethod decorator
+    def create_table(cls):
+        """Create the job_applications table."""
         try:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS job_applications (
@@ -23,13 +24,14 @@ class JobApplication:
                 date_applied DATE,
                 last_follow_up DATE,
                 status TEXT CHECK(status IN ('applied', 'pending', 'rejected', 'offer')),
-                FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
+                FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE cascade
             )
             """)
             CONN.commit()
             print("Table 'job_applications' created successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
+
 
     def save(self):
         """Save a new job application to the database."""
