@@ -30,4 +30,12 @@ class Company:
         CONN.commit()
         self.id = CURSOR.lastrowid
 
-    #DROP TABLE
+    @classmethod
+    def drop_table(cls):
+        """Drop the companies table."""
+        try:
+            CURSOR.execute("DROP TABLE IF EXISTS companies")
+            CONN.commit()
+            print("Table 'companies' dropped successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while dropping the table: {e}")

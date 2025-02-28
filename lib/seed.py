@@ -12,7 +12,10 @@ def create_tables():
 
 #drop tables method
 def drop_tables():
-    pass
+    Tag.drop_table()
+    JobApplicationTag.drop_table()
+    Company.drop_table()
+    JobApplication.drop_table()
     
 if __name__ == "__main__":
     create_tables()

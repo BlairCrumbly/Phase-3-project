@@ -41,4 +41,13 @@ class JobApplicationTag:
         CURSOR.execute("SELECT * FROM post_tags")
         return [cls(id=row[0], post_id=row[1], tag_id=row[2]) for row in CURSOR.fetchall()]
     
-    #drop tables
+    
+    @classmethod
+    def drop_table(cls):
+        """Drop the job_application_tags table."""
+        try:
+            CURSOR.execute("DROP TABLE IF EXISTS job_application_tags")
+            CONN.commit()
+            print("Table 'job_application_tags' dropped successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while dropping the table: {e}")

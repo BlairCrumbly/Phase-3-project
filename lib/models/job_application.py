@@ -40,4 +40,13 @@ class JobApplication:
         CONN.commit()
         self.id = CURSOR.lastrowid  # Set the object's ID after insertion
 
-        #DROP TABLE
+    
+    @classmethod
+    def drop_table(cls):
+        """Drop the job_applications table."""
+        try:
+            CURSOR.execute("DROP TABLE IF EXISTS job_applications")
+            CONN.commit()
+            print("Table 'job_applications' dropped successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while dropping the table: {e}")
