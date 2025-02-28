@@ -1,5 +1,14 @@
 # lib/cli.py
+<<<<<<< HEAD
 #test
+=======
+from models.company import Company
+from models.job_application import JobApplication
+from models.tag import Tag
+from models.job_application_tag import JobApplicationTag
+
+
+>>>>>>> f3a392514d037c11fdd5feb9d081180624d5562b
 from helpers import (
     exit_program,
     helper_1
@@ -26,3 +35,4 @@ def menu():
 
 if __name__ == "__main__":
     main()
+
