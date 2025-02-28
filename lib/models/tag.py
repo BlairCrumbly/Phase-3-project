@@ -54,3 +54,7 @@ class Tag:
             print("Table 'tags' dropped successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while dropping the table: {e}")
+
+    @classmethod
+    def new_method(cls):
+        pass
