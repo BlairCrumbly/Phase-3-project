@@ -30,9 +30,18 @@ class JobApplicationTag:
 
     def save(self):
         """Save a new post-tag relationship."""
-        CURSOR.execute("INSERT INTO post_tags (post_id, tag_id) VALUES (?, ?)", (self.post_id, self.tag_id))
-        CONN.commit()
-        self.id = CURSOR.lastrowid
+        try:
+            CURSOR.execute("""
+            INSERT INTO post_tags (post_id, tag_id)
+            VALUES (?, ?)
+            """, (self.post_id, self.tag_id))
+            CONN.commit()
+            self.id = CURSOR.lastrowid 
+            print(f"Post-tag relationship saved successfully with ID {self.id}.")
+        except sqlite3.IntegrityError as e:
+            print(f"Integrity error occurred while saving post-tag relationship: {e}")
+        except sqlite3.Error as e:
+            print(f"An error occurred while saving post-tag relationship: {e}")
         
 
     @classmethod
