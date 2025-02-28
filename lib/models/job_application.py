@@ -35,12 +35,18 @@ class JobApplication:
 
     def save(self):
         """Save a new job application to the database."""
-        CURSOR.execute("""
-        INSERT INTO job_applications (job_title, company_id, description, date_applied, last_follow_up, status)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """, (self.job_title, self.company_id, self.description, self.date_applied, self.last_follow_up, self.status))
-        CONN.commit()
-        self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+        try:
+            CURSOR.execute("""
+            INSERT INTO job_applications (job_title, company_id, description, date_applied, last_follow_up, status)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, (self.job_title, self.company_id, self.description, self.date_applied, self.last_follow_up, self.status))
+            CONN.commit()  # Commit the transaction
+            self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+            print(f"Job application '{self.job_title}' saved successfully with ID {self.id}.")
+        except sqlite3.IntegrityError as e:
+            print(f"Integrity error occurred while saving job application: {e}")
+        except sqlite3.Error as e:
+            print(f"An error occurred while saving job application: {e}")
 
     
     @classmethod

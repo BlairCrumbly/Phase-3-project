@@ -47,8 +47,14 @@ class JobApplicationTag:
     @classmethod
     def get_all(cls):
         """Retrieve all post-tag relationships."""
-        CURSOR.execute("SELECT * FROM post_tags")
-        return [cls(id=row[0], post_id=row[1], tag_id=row[2]) for row in CURSOR.fetchall()]
+        try:
+            CURSOR.execute("SELECT * FROM post_tags")
+            rows = CURSOR.fetchall()
+            return [cls(id=row[0], post_id=row[1], tag_id=row[2]) for row in rows]
+        except sqlite3.Error as e:
+            print(f"An error occurred while retrieving post-tag relationships: {e}")
+            return []  # Return an empty list in case of an error
+
     
     
     @classmethod

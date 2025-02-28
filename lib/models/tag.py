@@ -37,9 +37,13 @@ class Tag:
     @classmethod
     def get_all(cls):
         """Retrieve all tags from the database."""
-        CURSOR.execute("SELECT * FROM tags")
-        return [cls(id=row[0], name=row[1], tag_type=row[2]) for row in CURSOR.fetchall()]
-
+        try:
+            CURSOR.execute("SELECT * FROM tags")
+            rows = CURSOR.fetchall()
+            return [cls(id=row[0], name=row[1], tag_type=row[2]) for row in rows]
+        except sqlite3.Error as e:
+                print(f"An error occurred while retrieving tags: {e}")
+                return []  # Return an empty list in case of an error
 
     @classmethod
     def drop_table(cls):
