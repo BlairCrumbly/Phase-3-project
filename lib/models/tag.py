@@ -13,12 +13,11 @@ class Tag:
         try:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS tags (
-                tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,  -- Name of the tag (e.g., 'remote', 'full-time')
-                tag_type TEXT CHECK(tag_type IN ('location', 'length')) NOT NULL  -- Type of the tag
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE NOT NULL,
+            tag_type TEXT CHECK(tag_type IN ('location', 'length')) NOT NULL
             )
             """)
-            CONN.commit()
             print("Table 'tags' created successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
@@ -56,5 +55,18 @@ class Tag:
             print(f"An error occurred while dropping the table: {e}")
 
     @classmethod
-    def new_method(cls):
-        pass
+    def find_by_name(cls, name):
+        """Find a tag by name."""
+        CURSOR.execute("SELECT * FROM tags WHERE name = ?", (name,))
+        row = CURSOR.fetchone()
+        return cls(id=row[0], name=row[1], tag_type=row[2]) if row else None
+
+    @classmethod
+    def delete(cls, id):
+        """Delete a tag if it's not linked to any jobs."""
+        try:
+            CURSOR.execute("DELETE FROM tags WHERE id = ?", (id,))
+            CONN.commit()
+            print(f"Tag {id} deleted.")
+        except sqlite3.Error as e:
+            print(f"Error deleting tag: {e}")
