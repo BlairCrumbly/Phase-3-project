@@ -4,50 +4,83 @@ from models.job_application import JobApplication
 from models.tag import Tag
 from models.job_application_tag import JobApplicationTag
 from helpers import exit_program
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
+
+console = Console()
+
+def show_welcome():
+    console.print(
+        Panel.fit(
+            Text("💼 Job Application Tracker 💼", style="bold cyan"),
+            title="🚀 Welcome!", 
+            border_style="green"
+        )
+    )
+
+    console.print(
+        "[bold green]Track your job applications, manage tags, and stay organized![/bold green]"
+    )
+
+    console.print("\n[bold yellow]Quick Commands:[/bold yellow]")
+    console.print("  🎯 [cyan]add tag[/cyan] - Create a new tag")
+    console.print("  📝 [cyan]list tags[/cyan] - Show all saved tags")
+    console.print("  🔗 [cyan]attach tag[/cyan] - Link a tag to a job application")
+    console.print("  ❓ [cyan]help[/cyan] - See all available commands")
+    console.print("  ❌ [red]exit[/red] - Quit the application\n")
+
+
 
 def main():
+    show_welcome()
+
     while True:
-        menu()
-        choice = input("> ")
+        command = input("\nEnter a command: ").strip().lower()
         
-        if choice == "0":
+        if command in ["exit", "quit"]:
             exit_program()
-        elif choice == "1":
+        elif command in ["help", "?"]:
+            show_help()
+        elif command == "list tags":
             list_tags()
-        elif choice == "2":
+        elif command == "create tag":
             create_tag()
-        elif choice == "3":
+        elif command == "delete tag":
             delete_tag()
-        elif choice == "4":
+        elif command == "assign tag":
             assign_tag_to_job()
-        elif choice == "5":
+        elif command == "remove tag":
             remove_tag_from_job()
-        elif choice == "6":
+        elif command == "list jobs by tag":
             list_jobs_by_tag()
         else:
-            print("Invalid choice. Please try again.")
+            print("Invalid command. Type 'help' for a list of available commands.")
 
-def menu():
-    print("\n--- Job Application CLI ---")
-    print("0. Exit the program")
-    print("1. List all tags")
-    print("2. Create a new tag")
-    print("3. Delete a tag")
-    print("4. Assign a tag to a job")
-    print("5. Remove a tag from a job")
-    print("6. List jobs by a tag")
+def show_help():
+    """Display available commands."""
+    print("\nAvailable Commands:")
+    print("  exit / quit           - Exit the program")
+    print("  help / ?              - Show this help menu")
+    print("  list tags             - Show all available tags")
+    print("  create tag            - Add a new tag")
+    print("  delete tag            - Remove a tag by ID")
+    print("  assign tag            - Assign a tag to a job application")
+    print("  remove tag            - Remove a tag from a job application")
+    print("  list jobs by tag      - Show jobs associated with a tag")
 
 def list_tags():
-    """List all available tags."""
+    """List all tags stored in the database."""
     tags = Tag.get_all()
     if not tags:
         print("No tags found.")
     else:
+        print("\nTags:")
         for tag in tags:
-            print(f"{tag.id}: {tag.name} ({tag.tag_type})")
+            print(f"  {tag.id}: {tag.name} ({tag.tag_type})")
 
 def create_tag():
-    """Create a new tag."""
+    """Prompt the user to create a new tag."""
     name = input("Enter tag name: ").strip()
     tag_type = input("Enter tag type (location/length): ").strip().lower()
     
@@ -60,7 +93,7 @@ def create_tag():
     print(f"Tag '{name}' added successfully.")
 
 def delete_tag():
-    """Delete a tag."""
+    """Prompt the user to delete a tag."""
     list_tags()
     tag_id = input("Enter the tag ID to delete: ").strip()
     
@@ -105,10 +138,15 @@ def list_jobs_by_tag():
         if not jobs:
             print(f"No jobs found for tag {tag_id}.")
         else:
+            print("\nJobs with this tag:")
             for job in jobs:
-                print(f"Job {job[0]}: {job[1]}")
+                print(f"  Job {job[0]}: {job[1]}")
     except ValueError:
         print("Invalid input. Please enter a valid tag ID.")
 
 if __name__ == "__main__":
     main()
+
+
+
+#PYTHONPATH=lib python -m cli
