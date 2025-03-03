@@ -103,3 +103,58 @@ class JobApplication:
             print("Table 'job_applications' dropped successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while dropping the table: {e}")
+
+            
+    @classmethod
+    def find_by_id(cls, job_id):
+        """Retrieve a job application by ID."""
+        try:
+            CURSOR.execute("SELECT * FROM job_applications WHERE job_id = ?", (job_id,))
+            row = CURSOR.fetchone()
+            return cls(*row) if row else None
+        except sqlite3.Error as e:
+            print(f"An error occurred while retrieving job application ID {job_id}: {e}")
+            return None
+
+    @classmethod
+    def get_all(cls):
+        """Fetch all job applications."""
+        try:
+            CURSOR.execute("SELECT * FROM job_applications")
+            rows = CURSOR.fetchall()
+            return [cls(*row) for row in rows] if rows else []
+        except sqlite3.Error as e:
+            print(f"An error occurred while fetching all job applications: {e}")
+            return []
+
+    def update(self, **kwargs):
+        """Update job application fields dynamically."""
+        valid_fields = {'job_title', 'company_id', 'description', 'date_applied', 'last_follow_up', 'status'}
+        updates = {key: value for key, value in kwargs.items() if key in valid_fields}
+        
+        if not updates:
+            raise ValueError("No valid fields provided for update.")
+
+        set_clause = ", ".join(f"{key} = ?" for key in updates.keys())
+        values = list(updates.values()) + [self.id]
+
+        try:
+            CURSOR.execute(f"UPDATE job_applications SET {set_clause} WHERE job_id = ?", values)
+            CONN.commit()
+            
+            for key, value in updates.items():
+                setattr(self, key, value)
+
+            print(f"Job application ID {self.id} updated successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while updating job application ID {self.id}: {e}")
+
+    def delete(self):
+        """Delete a job application."""
+        try:
+            CURSOR.execute("DELETE FROM job_applications WHERE job_id = ?", (self.id,))
+            CONN.commit()
+            print(f"Job application ID {self.id} deleted successfully.")
+        except sqlite3.Error as e:
+            print(f"An error occurred while deleting job application ID {self.id}: {e}")
+
