@@ -24,7 +24,7 @@ def show_welcome():
     )
 
     console.print("\n[bold yellow]Quick Commands:[/bold yellow]")
-    console.print("  🎯 [cyan]add tag[/cyan] - Create a new tag")
+    console.print("  🎯 [cyan]create tag[/cyan] - Create a new tag")
     console.print("  📝 [cyan]list tags[/cyan] - Show all saved tags")
     console.print("  🔗 [cyan]attach tag[/cyan] - Link a tag to a job application")
     console.print("  ❓ [cyan]help[/cyan] - See all available commands")
@@ -82,7 +82,7 @@ def list_tags():
 def create_tag():
     """Prompt the user to create a new tag."""
     name = input("Enter tag name: ").strip()
-    tag_type = input("Enter tag type (location/length): ").strip().lower()
+    tag_type = input("Enter tag type (location or length): ").strip().lower()
     
     if tag_type not in ["location", "length"]:
         print("Invalid tag type. Must be 'location' or 'length'.")
@@ -150,3 +150,6 @@ if __name__ == "__main__":
 
 
 #PYTHONPATH=lib python -m cli
+
+#from models.tag import Tag
+#Tag.create_table()

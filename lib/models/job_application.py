@@ -11,7 +11,7 @@ class JobApplication:
         self.last_follow_up = last_follow_up
         self.status = status
 
-    @classmethod  # Add the @classmethod decorator
+    @classmethod
     def create_table(cls):
         """Create the job_applications table."""
         try:
@@ -40,8 +40,8 @@ class JobApplication:
             INSERT INTO job_applications (job_title, company_id, description, date_applied, last_follow_up, status)
             VALUES (?, ?, ?, ?, ?, ?)
             """, (self.job_title, self.company_id, self.description, self.date_applied, self.last_follow_up, self.status))
-            CONN.commit()  # Commit the transaction
-            self.id = CURSOR.lastrowid  # Set the object's ID after insertion
+            CONN.commit()  
+            self.id = CURSOR.lastrowid
             print(f"Job application '{self.job_title}' saved successfully with ID {self.id}.")
         except sqlite3.IntegrityError as e:
             print(f"Integrity error occurred while saving job application: {e}")

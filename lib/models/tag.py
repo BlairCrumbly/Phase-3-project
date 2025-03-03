@@ -2,10 +2,33 @@ from models import CONN, CURSOR
 import sqlite3
 
 class Tag:
+    VALID_TAG_TYPES = {"location", "length"}
+
     def __init__(self, name, tag_type, id=None):
         self.id = id
         self.name = name
-        self.tag_type = tag_type  # Store the tag type ('location' or 'length')
+        self.tag_type = tag_type  
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Tag name must be a non-empty string.")
+        self._name = value.strip()
+
+    @property
+    def tag_type(self):
+        return self._tag_type
+
+    @tag_type.setter
+    def tag_type(self, value):
+        if value not in self.VALID_TAG_TYPES:
+            raise ValueError(f"Invalid tag type. Must be one of {self.VALID_TAG_TYPES}")
+        self._tag_type = value
+
 
     @classmethod
     def create_table(cls):
@@ -20,8 +43,8 @@ class Tag:
             """)
             print("Table 'tags' created successfully.")
         except sqlite3.Error as e:
-            print(f"An error occurred while creating the table: {e}")
-
+            print(f"An error occurred while creating the table: {e}")   
+            
 
     def save(self):
         """Save a new tag to the database."""
@@ -70,3 +93,11 @@ class Tag:
             print(f"Tag {id} deleted.")
         except sqlite3.Error as e:
             print(f"Error deleting tag: {e}")
+
+
+    @classmethod
+    def find_by_id(cls, id):
+        """Find a tag by ID."""
+        CURSOR.execute("SELECT * FROM tags WHERE id = ?", (id,))
+        row = CURSOR.fetchone()
+        return cls(id=row[0], name=row[1], tag_type=row[2]) if row else None

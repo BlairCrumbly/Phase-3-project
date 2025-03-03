@@ -1,4 +1,4 @@
-from lib.models.tag import Tag
+from models.tag import Tag
 from models import CONN, CURSOR
 import sqlite3
 
@@ -7,6 +7,11 @@ import sqlite3
 # foreign key as primary keys
 
 class JobApplicationTag:
+
+    #property setters validating int, must be existing record:
+    #find by id method in tag called up
+    #
+
     def __init__(self, tag_id, post_id, id=None):
         self.id = id
         self.tag_id = tag_id
