@@ -4,18 +4,36 @@ import sqlite3
 
 
 #! _______ JOIN TABLE ___________
-# foreign key as primary keys
 
 class JobApplicationTag:
 
-    #property setters validating int, must be existing record:
-    #find by id method in tag called up
-    #
+    #property setters validating int, must be existing record (use find_by_id method)
 
     def __init__(self, tag_id, post_id, id=None):
         self.id = id
         self.tag_id = tag_id
         self.post_id = post_id
+    
+    @property
+    def tag_id(self):
+        return self._tag_id
+
+    @tag_id.setter
+    def tag_id(self, value):
+        if not isinstance(value, int) or not Tag.find_by_id(value):
+            raise ValueError(f"Invalid tag_id {value}. It must be an existing tag ID.")
+        self._tag_id = value
+
+    @property
+    def post_id(self):
+        return self._post_id
+
+    @post_id.setter
+    def post_id(self, value):
+        if not isinstance(value, int) or value <= 0:
+            raise ValueError(f"Invalid post_id {value}. It must be a positive integer.")
+        self._post_id = value
+
 
     @classmethod
     def create_table(cls):
