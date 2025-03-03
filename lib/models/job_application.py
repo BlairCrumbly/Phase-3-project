@@ -127,6 +127,7 @@ class JobApplication:
             print(f"An error occurred while fetching all job applications: {e}")
             return []
 
+#use kwargs!!!
     def update(self, **kwargs):
         """Update job application fields dynamically."""
         valid_fields = {'job_title', 'company_id', 'description', 'date_applied', 'last_follow_up', 'status'}

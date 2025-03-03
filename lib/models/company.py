@@ -92,3 +92,13 @@ class Company:
         CURSOR.execute("SELECT * FROM companies WHERE id = ?", (company_id,))
         row = CURSOR.fetchone()
         return cls(id=row[0], name=row[1], website=row[2], contact_info=row[3]) if row else None
+
+
+    @classmethod
+    def find_by_name(cls, name):
+        """Find a company by its name."""
+        CURSOR.execute("SELECT * FROM companies WHERE name = ?", (name,))
+        row = CURSOR.fetchone()
+        if row:
+            return cls(*row) 
+        return None
