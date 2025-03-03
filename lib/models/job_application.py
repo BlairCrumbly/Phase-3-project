@@ -2,6 +2,8 @@ from models import CONN, CURSOR
 import sqlite3
 
 class JobApplication:
+    VALID_STATUSES = {'applied', 'pending', 'rejected', 'offer'}
+
     def __init__(self, job_title, company_id, description, date_applied, last_follow_up, status, id=None):
         self.id = id
         self.job_title = job_title
@@ -10,6 +12,49 @@ class JobApplication:
         self.date_applied = date_applied
         self.last_follow_up = last_follow_up
         self.status = status
+
+    @property
+    def company_id(self):
+        return self._company_id
+
+    @company_id.setter
+    def company_id(self, value):
+        if value is not None:
+            if not isinstance(value, int) or value <= 0:
+                raise ValueError(f"Invalid company_id {value}. It must be a positive integer or None.")
+            if not Company.find_by_id(value):  # Check if company exists in DB
+                raise ValueError(f"Company with ID {value} does not exist.")
+            self._company_id = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        if value not in self.VALID_STATUSES:
+            raise ValueError(f"Invalid status '{value}'. Must be one of {self.VALID_STATUSES}.")
+        self._status = value
+
+    @property
+    def date_applied(self):
+        return self._date_applied
+
+    @date_applied.setter
+    def date_applied(self, value):
+        if not self._validate_date(value):
+            raise ValueError(f"Invalid date format: {value}. Use YYYY-MM-DD.")
+        self._date_applied = value
+
+    @property
+    def last_follow_up(self):
+        return self._last_follow_up
+
+    @last_follow_up.setter
+    def last_follow_up(self, value):
+        if value is not None and not self._validate_date(value):
+            raise ValueError(f"Invalid date format: {value}. Use YYYY-MM-DD or leave empty.")
+        self._last_follow_up = value
 
     @classmethod
     def create_table(cls):
