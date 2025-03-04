@@ -2,7 +2,13 @@
 # lib/debug.py
 
 from models.__init__ import CONN, CURSOR
+from models.company import Company
+from models.job_application import JobApplication
+from models.tag import Tag
+from models.job_application_tag import JobApplicationTag
 import ipdb
 
 
+
+job = JobApplication.find_by_id(2)
 ipdb.set_trace()

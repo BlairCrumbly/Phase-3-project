@@ -21,6 +21,7 @@ class JobApplicationTag:
     @tag_id.setter
     def tag_id(self, value):
         if not isinstance(value, int) or not Tag.find_by_id(value):
+            #separate errors
             raise ValueError(f"Invalid tag_id {value}. It must be an existing tag ID.")
         self._tag_id = value
 
@@ -31,11 +32,14 @@ class JobApplicationTag:
     @post_id.setter
     def post_id(self, value):
         if not isinstance(value, int) or value <= 0:
+            #separate errors
             raise ValueError(f"Invalid post_id {value}. It must be a positive integer.")
         self._post_id = value
 
+#edit down prints
 
     @classmethod
+    #indexing foreign keys?
     def create_table(cls):
         """Create the post_tags table."""
         try:
@@ -56,7 +60,7 @@ class JobApplicationTag:
         """Save a new post-tag relationship."""
         try:
             CURSOR.execute("""
-            INSERT INTO post_tags (post_id, tag_id)
+            INSERT INTO job_application_tags (post_id, tag_id)
             VALUES (?, ?)
             """, (self.post_id, self.tag_id))
             CONN.commit()
@@ -70,9 +74,9 @@ class JobApplicationTag:
 
     @classmethod
     def get_all(cls):
-        """Retrieve all post-tag relationships."""
+        """Retrieve all job application-tag relationships."""
         try:
-            CURSOR.execute("SELECT * FROM post_tags")
+            CURSOR.execute("SELECT * FROM job_application_tags")
             rows = CURSOR.fetchall()
             return [cls(id=row[0], post_id=row[1], tag_id=row[2]) for row in rows]
         except sqlite3.Error as e:
@@ -91,7 +95,7 @@ class JobApplicationTag:
         except sqlite3.Error as e:
             print(f"An error occurred while dropping the table: {e}")
 
-    
+#can live in job application by association
     @classmethod
     def get_tags_for_job(cls, job_id):
         """Retrieve all tags linked to a job."""
@@ -115,7 +119,8 @@ class JobApplicationTag:
         """, (tag_id,))
     
         return CURSOR.fetchall()
-    
+
+#
     @classmethod
     def delete_tag_from_job(cls, job_id, tag_id):
         """Remove a specific tag from a job application."""

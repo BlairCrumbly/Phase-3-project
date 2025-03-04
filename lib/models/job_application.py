@@ -1,6 +1,8 @@
 from models import CONN, CURSOR
+from models.company import Company
+from models.job_application_tag import JobApplicationTag
 import sqlite3
-
+import ipdb
 class JobApplication:
     VALID_STATUSES = {'applied', 'pending', 'rejected', 'offer'}
 
@@ -12,6 +14,18 @@ class JobApplication:
         self.date_applied = date_applied
         self.last_follow_up = last_follow_up
         self.status = status
+
+#association methods
+    def job_application_tags(self):
+        try:
+            CURSOR.execute("""
+            SELECT * FROM job_application_tags WHERE post_id == ? 
+            """,(self.id,))
+            job_tags = CURSOR.fetchall()
+            return [JobApplicationTag(tag_id = job_tag[2], post_id = job_tag[1], id= job_tag[0]) for job_tag in job_tags]
+        except:
+            raise TypeError("UHOH")
+
 
     @property
     def company_id(self):
@@ -55,6 +69,14 @@ class JobApplication:
         if value is not None and not self._validate_date(value):
             raise ValueError(f"Invalid date format: {value}. Use YYYY-MM-DD or leave empty.")
         self._last_follow_up = value
+
+    def _validate_date(self, date):
+        import re
+        if re.match(r"^\d{4}-\d{2}-\d{2}",date):
+            return True
+        else:
+            return False
+    
 
     @classmethod
     def create_table(cls):
@@ -111,7 +133,7 @@ class JobApplication:
         try:
             CURSOR.execute("SELECT * FROM job_applications WHERE job_id = ?", (job_id,))
             row = CURSOR.fetchone()
-            return cls(*row) if row else None
+            return cls(job_title = row[1], company_id  = row[2], description  = row[3], date_applied  = row[4], last_follow_up  = row[5], status = row[6], id = row[0]) if row else None
         except sqlite3.Error as e:
             print(f"An error occurred while retrieving job application ID {job_id}: {e}")
             return None

@@ -44,7 +44,7 @@ class Company:
         try:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS companies (
-                company_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL CHECK(LENGTH(name) > 0),
                 website TEXT,
                 contact_info TEXT
@@ -55,6 +55,7 @@ class Company:
         except sqlite3.Error as e:
             print(f"An error occurred while creating the table: {e}")
     
+    @classmethod
     def get_all(cls):
         """Retrieve all companies from the database."""
         try:
@@ -87,9 +88,9 @@ class Company:
 
     
     @classmethod
-    def find_by_id(cls, company_id):
+    def find_by_id(cls, id):
         """Find a company by ID."""
-        CURSOR.execute("SELECT * FROM companies WHERE id = ?", (company_id,))
+        CURSOR.execute("SELECT * FROM companies WHERE id = ?", (id,))
         row = CURSOR.fetchone()
         return cls(id=row[0], name=row[1], website=row[2], contact_info=row[3]) if row else None
 

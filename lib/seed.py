@@ -90,8 +90,8 @@ if __name__ == "__main__":
     # Seed the database with data
     seed_data()
 
-    # Test the data
-    test_data()
+    # # Test the data
+    # test_data()
 
     # Optionally, you can drop tables if needed
     # drop_tables()
