@@ -11,7 +11,7 @@ class JobApplication:
         self.last_follow_up = last_follow_up
         self.status = status
 
-    @classmethod  # Add the @classmethod decorator
+    @classmethod  
     def create_table(cls):
         """Create the job_applications table."""
         try:

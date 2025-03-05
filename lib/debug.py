@@ -3,6 +3,6 @@
 
 from models.__init__ import CONN, CURSOR
 import ipdb
-
+from models.company import Company
 
 ipdb.set_trace()
