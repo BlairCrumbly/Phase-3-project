@@ -2,6 +2,7 @@ from models.company import Company
 from models.job_application import JobApplication
 from models.tag import Tag
 from models.job_application_tag import JobApplicationTag
+import ipdb
 
 
 def create_tables():
@@ -11,11 +12,11 @@ def create_tables():
     JobApplicationTag.create_table()
 
 def drop_tables():
-    Tag.drop_table()
     JobApplicationTag.drop_table()
-    Company.drop_table()
     JobApplication.drop_table()
-    
+    Tag.drop_table()
+    Company.drop_table()
+
 def seed_data():
     """Seed the database with sample data."""
     # Seed Companies

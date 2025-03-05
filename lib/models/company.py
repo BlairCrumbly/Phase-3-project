@@ -1,6 +1,6 @@
 from models import CONN, CURSOR
 import sqlite3
-from job_application import JobApplication
+import ipdb
 
 class Company:
     def __init__(self, name, website=None, contact_info=None, id=None):
@@ -84,12 +84,14 @@ class Company:
 
 
     #! find company by ID
-    @classmethod
+    @classmethod #add validation
     def find_by_id(cls, company_id):
         """Find a company by ID."""
         try:
-            CURSOR.execute("SELECT company_id, name, website, contact_info FROM companies WHERE company_id = ?", (company_id,))
+            CURSOR.execute("SELECT * FROM companies WHERE id = ?", (company_id,))
+            
             row = CURSOR.fetchone()
+            
             if row:
                 return cls(id=row[0], name=row[1], website=row[2], contact_info=row[3])
 
@@ -127,7 +129,7 @@ class Company:
             print("Company must have an ID before updating.")
             return
         try:
-            CURSOR.execute("UPDATE companies SET name = ?, website = ?, contact_info = ? WHERE company_id = ?",
+            CURSOR.execute("UPDATE companies SET name = ?, website = ?, contact_info = ? WHERE id = ?",
                            (self.name, self.website, self.contact_info, self.id))
             CONN.commit()
             return(f"Company '{self.name}' updated successfully.")
@@ -165,43 +167,41 @@ class Company:
 #todo make add_job_application method to assocaite JobApplication instance with a company
 
 
-def job_applications(self):
-    """get all columns from job_applications that match the id of the company instance and filter rows
-    where the company.id matches the given value
-    """
-    try:
-        CURSOR.execute("SELECT * FROM job_applications WHERE company.id = ?",  self.id)
-        job_applications = CURSOR.fetchall()
-        return [JobApplication(*row) for row in job_applications]
-    except sqlite3.Error as e:
-        return f"An error occurred while retrieving job applications for company {e}"
+    def job_applications(self):
+        """get all columns from job_applications that match the id of the company instance and filter rows
+        where the company.id matches the given value
+        """
+        try:
+            CURSOR.execute("SELECT * FROM job_applications WHERE company_id = ?",  (self.id,))
+            job_applications = CURSOR.fetchall()
+            return [JobApplication(job_title=row[1], company_id=row[2], description=row[3],
+                   date_applied=row[4], last_follow_up=row[5], status=row[6], id=row[0]) for row in job_applications]
+        except sqlite3.Error as e:
+            return f"An error occurred while retrieving job applications for company {e}"
 
 
-def add_job_application(self, job_application):
+    def add_job_application(self, job_application):
+        """associates a given JobApplication instance with the current company by setting
+        the company's ID on the job application and saving it to the database.
+        """
 
-    if not isinstance(job_application, JobApplication):
-        raise TypeError("Provided object must be a JobApplication instance")
-    try:
-        job_application.company_id = self.id #! make sure company id is  set
-        job_application.save()
-        return f"Job application '{job_application.job_title}' successfully associated with company '{self.name}'."
-    except Exception as e:
-        return f"An error occurred while associating the job application: {e}"
-
-
-@classmethod
-def drop_table(cls):
-        #!drop the companies table.
-    try:
-        CURSOR.execute("DROP TABLE IF EXISTS companies")
-        return("Table 'companies' dropped successfully.")
-    except sqlite3.Error as e:
-        return(f"An error occurred while dropping the table: {e}")
+        if not isinstance(job_application, JobApplication):
+            raise TypeError("Provided object must be a JobApplication instance")
+        try:
+            job_application.company_id = self.id #! make sure company id is  set
+            job_application.save()
+            return f"Job application '{job_application.job_title}' successfully associated with company '{self.name}'."
+        except Exception as e:
+            return f"An error occurred while associating the job application: {e}"
 
 
+    @classmethod
+    def drop_table(cls):
+            #!drop the companies table.
+        try:
+            CURSOR.execute("DROP TABLE IF EXISTS companies")
+            return("Table 'companies' dropped successfully.")
+        except sqlite3.Error as e:
+            return(f"An error occurred while dropping the table: {e}")
 
-
-
-
-
-Company.create_table()
+from models.job_application import JobApplication

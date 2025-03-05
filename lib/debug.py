@@ -10,3 +10,5 @@ import ipdb
 from models.company import Company
 
 
+company = Company.find_by_id(1)
+ipdb.set_trace()
