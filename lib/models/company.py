@@ -1,5 +1,6 @@
 from models import CONN, CURSOR
 import sqlite3
+from job_application import JobApplication
 
 class Company:
     def __init__(self, name, website=None, contact_info=None, id=None):
@@ -7,13 +8,44 @@ class Company:
         self.name = name
         self.website = website
         self.contact_info = contact_info
-#! create the companies table in the database if it does not already exist
+
+#! props and validation
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Company name must be a non-empty string.")
+        self._name = value.strip()
+
+    @property
+    def website(self):
+        return self._website
+
+    @website.setter
+    def website(self, value):
+        if value is not None and not isinstance(value, str):
+            raise TypeError("Website must be a string or None.")
+        self._website = value
+
+    @property
+    def contact_info(self):
+        return self._contact_info
+
+    @contact_info.setter
+    def contact_info(self, value):
+        if value is not None and not isinstance(value, str):
+            raise TypeError("Contact info must be a string or None.")
+        self._contact_info = value
+
     @classmethod
     def create_table(cls):
-        try: #cursor = conn.execute 
+        try:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS companies (
-                company_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL CHECK(LENGTH(name) > 0),
                 website TEXT,
                 contact_info TEXT
@@ -125,13 +157,51 @@ class Company:
         except Exception as e:
             return e
 
-    @classmethod
-    def drop_table(cls):
+
+
+#!association methods
+
+#todo make method that fetches related JobApplication instances
+#todo make add_job_application method to assocaite JobApplication instance with a company
+
+
+def job_applications(self):
+    """get all columns from job_applications that match the id of the company instance and filter rows
+    where the company.id matches the given value
+    """
+    try:
+        CURSOR.execute("SELECT * FROM job_applications WHERE company.id = ?",  self.id)
+        job_applications = CURSOR.fetchall()
+        return [JobApplication(*row) for row in job_applications]
+    except sqlite3.Error as e:
+        return f"An error occurred while retrieving job applications for company {e}"
+
+
+def add_job_application(self, job_application):
+
+    if not isinstance(job_application, JobApplication):
+        raise TypeError("Provided object must be a JobApplication instance")
+    try:
+        job_application.company_id = self.id #! make sure company id is  set
+        job_application.save()
+        return f"Job application '{job_application.job_title}' successfully associated with company '{self.name}'."
+    except Exception as e:
+        return f"An error occurred while associating the job application: {e}"
+
+
+@classmethod
+def drop_table(cls):
         #!drop the companies table.
-        try:
-            CURSOR.execute("DROP TABLE IF EXISTS companies")
-            return("Table 'companies' dropped successfully.")
-        except sqlite3.Error as e:
-            return(f"An error occurred while dropping the table: {e}")
+    try:
+        CURSOR.execute("DROP TABLE IF EXISTS companies")
+        return("Table 'companies' dropped successfully.")
+    except sqlite3.Error as e:
+        return(f"An error occurred while dropping the table: {e}")
+
+
+
+
+
+
 
 Company.create_table()

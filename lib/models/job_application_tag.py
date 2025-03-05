@@ -1,27 +1,55 @@
+from models.tag import Tag
 from models import CONN, CURSOR
 import sqlite3
 
 
 #! _______ JOIN TABLE ___________
-# foreign key as primary keys
 
 class JobApplicationTag:
+
+    #property setters validating int, must be existing record (use find_by_id method)
+
     def __init__(self, tag_id, post_id, id=None):
         self.id = id
         self.tag_id = tag_id
         self.post_id = post_id
+    
+    @property
+    def tag_id(self):
+        return self._tag_id
+
+    @tag_id.setter
+    def tag_id(self, value):
+        if not isinstance(value, int) or not Tag.find_by_id(value):
+            #separate errors
+            raise ValueError(f"Invalid tag_id {value}. It must be an existing tag ID.")
+        self._tag_id = value
+
+    @property
+    def post_id(self):
+        return self._post_id
+
+    @post_id.setter
+    def post_id(self, value):
+        if not isinstance(value, int) or value <= 0:
+            #separate errors
+            raise ValueError(f"Invalid post_id {value}. It must be a positive integer.")
+        self._post_id = value
+
+#edit down prints
 
     @classmethod
+    #indexing foreign keys?
     def create_table(cls):
         """Create the post_tags table."""
         try:
             CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS job_application_tags (
-                job_application_tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                post_id INTEGER NOT NULL,
-                tag_id INTEGER NOT NULL,
-                FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-                FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            FOREIGN KEY (post_id) REFERENCES job_applications(id) ON DELETE CASCADE,
+            FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
             )
             """)
             print("Table 'job_application_tags' created successfully.")
@@ -32,7 +60,7 @@ class JobApplicationTag:
         """Save a new post-tag relationship."""
         try:
             CURSOR.execute("""
-            INSERT INTO post_tags (post_id, tag_id)
+            INSERT INTO job_application_tags (post_id, tag_id)
             VALUES (?, ?)
             """, (self.post_id, self.tag_id))
             CONN.commit()
@@ -46,9 +74,9 @@ class JobApplicationTag:
 
     @classmethod
     def get_all(cls):
-        """Retrieve all post-tag relationships."""
+        """Retrieve all job application-tag relationships."""
         try:
-            CURSOR.execute("SELECT * FROM post_tags")
+            CURSOR.execute("SELECT * FROM job_application_tags")
             rows = CURSOR.fetchall()
             return [cls(id=row[0], post_id=row[1], tag_id=row[2]) for row in rows]
         except sqlite3.Error as e:
@@ -66,3 +94,35 @@ class JobApplicationTag:
             print("Table 'job_application_tags' dropped successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while dropping the table: {e}")
+
+#can live in job application by association
+    @classmethod
+    def get_tags_for_job(cls, job_id):
+        """Retrieve all tags linked to a job."""
+        CURSOR.execute("""
+        SELECT tags.id, tags.name, tags.tag_type 
+        FROM job_application_tags
+        JOIN tags ON job_application_tags.tag_id = tags.id
+        WHERE job_application_tags.post_id = ?
+        """, (job_id,))
+    
+        return [Tag(id=row[0], name=row[1], tag_type=row[2]) for row in CURSOR.fetchall()]
+
+    @classmethod
+    def get_jobs_by_tag(cls, tag_id):
+        """Retrieve all jobs linked to a tag."""
+        CURSOR.execute("""
+        SELECT job_applications.id, job_applications.job_title 
+        FROM job_application_tags
+        JOIN job_applications ON job_application_tags.post_id = job_applications.id
+        WHERE job_application_tags.tag_id = ?
+        """, (tag_id,))
+    
+        return CURSOR.fetchall()
+
+#
+    @classmethod
+    def delete_tag_from_job(cls, job_id, tag_id):
+        """Remove a specific tag from a job application."""
+        CURSOR.execute("DELETE FROM job_application_tags WHERE post_id = ? AND tag_id = ?", (job_id, tag_id))
+        CONN.commit()
