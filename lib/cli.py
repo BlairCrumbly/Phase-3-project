@@ -124,7 +124,7 @@ def assign_tag_to_job():
     
     try:
         job_id, tag_id = int(job_id), int(tag_id)
-        JobApplicationTag(tag_id=tag_id, post_id=job_id).save()
+        JobApplicationTag(tag_id=tag_id, job_id=job_id).save()
         print(f"Tag {tag_id} assigned to job {job_id}.")
     except ValueError:
         print("Invalid input. Please enter valid numerical IDs.")

@@ -19,10 +19,10 @@ class JobApplication:
     def job_application_tags(self):
         try:
             CURSOR.execute("""
-            SELECT * FROM job_application_tags WHERE post_id == ? 
+            SELECT * FROM job_application_tags WHERE job_id == ? 
             """,(self.id,))
             job_tags = CURSOR.fetchall()
-            return [JobApplicationTag(tag_id = job_tag[2], post_id = job_tag[1], id= job_tag[0]) for job_tag in job_tags]
+            return [JobApplicationTag(tag_id = job_tag[2], job_id = job_tag[1], id= job_tag[0]) for job_tag in job_tags]
         except:
             raise TypeError("UHOH")
 
