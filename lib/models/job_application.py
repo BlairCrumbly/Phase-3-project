@@ -1,6 +1,5 @@
 from models import CONN, CURSOR
 from models.company import Company
-from models.job_application_tag import JobApplicationTag
 import sqlite3
 import ipdb
 from datetime import datetime
@@ -164,7 +163,8 @@ class JobApplication:
         try:
             CURSOR.execute("SELECT * FROM job_applications")
             rows = CURSOR.fetchall()
-            return [cls(*row) for row in rows] if rows else []
+            return [cls(job_title=row[1], company_id=row[2], description=row[3], 
+                   date_applied=row[4], last_follow_up=row[5], status=row[6], id=row[0]) for row in rows] if rows else []
         except sqlite3.Error as e:
             print(f"An error occurred while fetching all job applications: {e}")
             return []
@@ -200,4 +200,4 @@ class JobApplication:
             print(f"Job application ID {self.id} deleted successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while deleting job application ID {self.id}: {e}")
-
+from models.job_application_tag import JobApplicationTag

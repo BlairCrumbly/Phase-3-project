@@ -118,9 +118,9 @@ class Company:
             (self.name, self.website, self.contact_info))
             CONN.commit()
             self.id = CURSOR.lastrowid  #! set the object's ID after insertion to match the database record
-            return self
+            
         except sqlite3.Error as e:
-            CONN.rollback() # add to every changing method
+            CONN.rollback() 
             return(f"An error occurred while saving the company: {e}")
 
      #! uppdate an existing company
@@ -149,7 +149,7 @@ class Company:
                 ORDER BY COUNT(*) DESC
                 LIMIT 2
             """)
-            rows = CURSOR.fetchall() #list of tuples
+            rows = CURSOR.fetchall()
 
             return [{
                 "company_id": row[0],
@@ -179,7 +179,6 @@ class Company:
         except sqlite3.Error as e:
             return f"An error occurred while retrieving job applications for company {e}"
 
-
     def add_job_application(self, job_application):
         """associates a given JobApplication instance with the current company by setting
         the company's ID on the job application and saving it to the database.
@@ -194,6 +193,15 @@ class Company:
         except Exception as e:
             return f"An error occurred while associating the job application: {e}"
 
+    def delete(self):
+        """Delete the company from the database by its ID."""
+        try:
+            CURSOR.execute("DELETE FROM companies WHERE id = ?", (self.id,))
+            CONN.commit()  # Commit the change
+            print(f"Company with ID {self.id} deleted.")
+        except sqlite3.Error as e:
+            CONN.rollback()
+            print(f"An error occurred while deleting the company: {e}")
 
     @classmethod
     def drop_table(cls):
@@ -203,5 +211,8 @@ class Company:
             return("Table 'companies' dropped successfully.")
         except sqlite3.Error as e:
             return(f"An error occurred while dropping the table: {e}")
+
+
+
 
 from models.job_application import JobApplication

@@ -139,3 +139,5 @@ class JobApplicationTag:
             print(f"Tag {tag_id} removed from job {job_id}.")
         except Exception as e:
             print(f"Error removing tag: {e}")
+            
+from models.job_application import JobApplication
