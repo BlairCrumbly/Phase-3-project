@@ -6,6 +6,8 @@ from helpers import exit_program
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+import ipdb
+
 
 console = Console()
 
@@ -23,15 +25,12 @@ def show_welcome():
     )
 
     console.print("\n[bold yellow]Quick Commands:[/bold yellow]")
-    console.print("  🎯 [cyan]create tag[/cyan] - Create a new tag")
-    console.print("  📝 [cyan]list tags[/cyan] - Show all saved tags")
-    console.print("  🔗 [cyan]assign tag[/cyan] - Link a tag to a job application")
     console.print("  🏢 [cyan]list jobs[/cyan] - Show all job applications")
     console.print("  🖊️ [cyan]create job[/cyan] - Create a new job application")
     console.print("  ✏️ [cyan]update job[/cyan] - Update an existing job application")
     console.print("  ❌ [red]delete job[/red] - Delete a job application")
     console.print("  ❓ [cyan]help[/cyan] - See all available commands")
-    console.print("  ❌ [red]exit[/red] - Quit the application\n")
+    console.print("[red]exit[/red] - Quit the application\n")
 
 def main():
     show_welcome()
@@ -118,14 +117,19 @@ def delete_tag():
         print("Invalid input. Please enter a valid tag ID.")
 
 def assign_tag_to_job():
-    """Assign a tag to a job application."""
+    """Assign a tag to a job application via JobApplication."""
     job_id = input("Enter job application ID: ").strip()
     tag_id = input("Enter tag ID: ").strip()
-    
+
     try:
         job_id, tag_id = int(job_id), int(tag_id)
-        JobApplicationTag(tag_id=tag_id, post_id=job_id).save()
-        print(f"Tag {tag_id} assigned to job {job_id}.")
+        job = JobApplication.find_by_id(job_id)
+
+        if not job:
+            print(f"Job application ID {job_id} not found.")
+            return
+        
+        job.add_tag(tag_id)
     except ValueError:
         print("Invalid input. Please enter valid numerical IDs.")
 

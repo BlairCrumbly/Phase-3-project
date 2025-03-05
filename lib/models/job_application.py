@@ -3,6 +3,8 @@ from models.company import Company
 from models.job_application_tag import JobApplicationTag
 import sqlite3
 import ipdb
+from datetime import datetime
+
 class JobApplication:
     VALID_STATUSES = {'applied', 'pending', 'rejected', 'offer'}
 
@@ -17,14 +19,28 @@ class JobApplication:
 
 #association methods
     def job_application_tags(self):
+        """Retrieve tags associated with the job application."""
         try:
             CURSOR.execute("""
-            SELECT * FROM job_application_tags WHERE post_id == ? 
-            """,(self.id,))
+            SELECT * FROM job_application_tags WHERE job_id = ? 
+            """, (self.id,))
             job_tags = CURSOR.fetchall()
-            return [JobApplicationTag(tag_id = job_tag[2], post_id = job_tag[1], id= job_tag[0]) for job_tag in job_tags]
-        except:
-            raise TypeError("UHOH")
+            return [JobApplicationTag(tag_id=job_tag[2], job_id=job_tag[1], id=job_tag[0]) for job_tag in job_tags]
+        except sqlite3.Error as e:
+            raise ValueError(f"Database error while fetching job application tags: {e}")
+            return []
+
+        
+    
+    def add_tag(self, tag_id):
+        """Associates the job with a tag and handles errors."""
+        try:
+            from models.job_application_tag import JobApplicationTag
+
+            JobApplicationTag.create(self.id, tag_id)
+            print(f"Tag {tag_id} successfully assigned to job {self.id}.")
+        except ValueError as e:
+            print(f"Error: {e}")
 
 
     @property
@@ -71,10 +87,11 @@ class JobApplication:
         self._last_follow_up = value
 
     def _validate_date(self, date):
-        import re
-        if re.match(r"^\d{4}-\d{2}-\d{2}",date):
+        """Check if the date is in YYYY-MM-DD format and valid."""
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
             return True
-        else:
+        except ValueError:
             return False
     
 
@@ -133,7 +150,10 @@ class JobApplication:
         try:
             CURSOR.execute("SELECT * FROM job_applications WHERE job_id = ?", (job_id,))
             row = CURSOR.fetchone()
-            return cls(job_title = row[1], company_id  = row[2], description  = row[3], date_applied  = row[4], last_follow_up  = row[5], status = row[6], id = row[0]) if row else None
+            if row is None:
+                return None
+            return cls(job_title=row[1], company_id=row[2], description=row[3], 
+                   date_applied=row[4], last_follow_up=row[5], status=row[6], id=row[0])
         except sqlite3.Error as e:
             print(f"An error occurred while retrieving job application ID {job_id}: {e}")
             return None

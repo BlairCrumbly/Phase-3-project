@@ -54,10 +54,10 @@ def seed_data():
 
     # Seed Job Application Tags
     # Ensure tag_id is valid (the tags must be saved first)
-    job_app_tag1 = JobApplicationTag(tag_id=location_tag1.id, post_id=job_app1.id)
+    job_app_tag1 = JobApplicationTag(tag_id=location_tag1.id, job_id=job_app1.id)
     job_app_tag1.save()
 
-    job_app_tag2 = JobApplicationTag(tag_id=length_tag2.id, post_id=job_app2.id)
+    job_app_tag2 = JobApplicationTag(tag_id=length_tag2.id, job_id=job_app2.id)
     job_app_tag2.save()
 
 
@@ -86,7 +86,7 @@ def test_data():
     job_app_tags = JobApplicationTag.get_all()
     print("\nJob Application Tags:")
     for tag in job_app_tags:
-        print(f"Job Application ID: {tag.post_id}, Tag ID: {tag.tag_id}")
+        print(f"Job Application ID: {tag.job_id}, Tag ID: {tag.tag_id}")
 
 if __name__ == "__main__":
 
