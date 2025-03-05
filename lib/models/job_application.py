@@ -200,4 +200,3 @@ class JobApplication:
             print(f"Job application ID {self.id} deleted successfully.")
         except sqlite3.Error as e:
             print(f"An error occurred while deleting job application ID {self.id}: {e}")
-

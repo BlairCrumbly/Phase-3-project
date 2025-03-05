@@ -4,7 +4,6 @@ from models.tag import Tag
 from models.job_application_tag import JobApplicationTag
 import ipdb
 
-
 def create_tables():
     Company.create_table()
     JobApplication.create_table()
@@ -26,9 +25,6 @@ def seed_data():
     company2 = Company(name="WebWorks", website="https://webworks.com", contact_info="info@webworks.com")
     company2.save()
 
-    company3 = Company(name="Noogle", website="https://webworks.com", contact_info="info@webworks.com")
-    company3.save()
-
     # Seed Tags
     location_tag1 = Tag(name="remote", tag_type="location")
     location_tag1.save()
@@ -49,10 +45,6 @@ def seed_data():
     job_app2 = JobApplication(job_title="Web Developer", company_id=company2.id, description="Build websites.", date_applied="2025-02-20", last_follow_up="2025-02-25", status="pending")
     job_app2.save()
 
-    job_app3 = JobApplication(job_title="Web Developer", company_id=company2.id, description="Build websites.", date_applied="2025-02-20", last_follow_up="2025-02-25", status="pending")
-    job_app3.save()
-
-
     # Seed Job Application Tags
     # Ensure tag_id is valid (the tags must be saved first)
     job_app_tag1 = JobApplicationTag(tag_id=location_tag1.id, job_id=job_app1.id)
@@ -72,10 +64,10 @@ def test_data():
         print(f"ID: {company.id}, Name: {company.name}, Website: {company.website}, Contact: {company.contact_info}")
 
     # Test: Get all job applications
-    # job_apps = JobApplication.get_all()
-    # print("\nJob Applications:")
-    # for job in job_apps:
-    #     print(f"ID: {job.id}, Job Title: {job.job_title}, Status: {job.status}, Company ID: {job.company_id}")
+    job_apps = JobApplication.get_all()
+    print("\nJob Applications:")
+    for job in job_apps:
+        print(f"ID: {job.id}, Job Title: {job.job_title}, Status: {job.status}, Company ID: {job.company_id}")
 
     # Test: Get all tags
     tags = Tag.get_all()
@@ -104,4 +96,3 @@ if __name__ == "__main__":
 
     # Optionally, you can drop tables if needed
     # drop_tables()
-
