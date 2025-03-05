@@ -10,3 +10,6 @@ import ipdb
 
 
 
+ipdb.set_trace()
+job = JobApplication.find_by_id(1)
+print(job.job_title)

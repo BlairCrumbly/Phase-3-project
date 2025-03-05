@@ -11,6 +11,18 @@ class Tag:
         self.name = name
         self.tag_type = tag_type  
 
+
+    def job_applications(self):
+        try:
+            CURSOR.execute("""
+            SELECT * FROM job_application_tags WHERE tag_id == ?
+            """, (self.id,))
+            job_app_tags = CURSOR.fetchall()
+            return [JobApplication.find_by_id(job_app_tag[1]) for job_app_tag in job_app_tags]
+        except Exception as e:
+            print(f"Error retrieving job applications for tag {self.id}: {e}")
+            return []
+
     @property
     def name(self):
         return self._name
