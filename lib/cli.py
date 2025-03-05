@@ -62,6 +62,14 @@ def main():
             update_job()
         elif command == "delete job":
             delete_job()
+        elif command == "list companies":
+            show_companies()
+        elif command == "create company":
+            create_company()
+        elif command == "update company":
+            update_company()
+        elif command == "delete company":
+            delete_company()
         else:
             print("Invalid command. Type 'help' for a list of available commands.")
 
@@ -70,16 +78,23 @@ def show_help():
     print("\nAvailable Commands:")
     print("  exit / quit           - Exit the program")
     print("  help / ?              - Show this help menu")
+
     print("  list tags             - Show all available tags")
     print("  create tag            - Add a new tag")
     print("  delete tag            - Remove a tag by ID")
     print("  assign tag            - Assign a tag to a job application")
     print("  remove tag            - Remove a tag from a job application")
+
     print("  list jobs by tag      - Show jobs associated with a tag")
     print("  list jobs             - List all job applications")
     print("  create job            - Add a new job application")
     print("  update job            - Update an existing job application")
     print("  delete job            - Remove a job application")
+
+    print("  list companies        - Show all companies")
+    print("  create company        - Add a new company")
+    print("  update company        - Update an existing company")
+    print("  delete company        - Remove a company")
 
 def list_tags():
     """List all tags stored in the database."""
@@ -145,6 +160,7 @@ def remove_tag_from_job():
     except ValueError:
         print("Invalid input. Please enter valid numerical IDs.")
 
+
 def list_jobs():
     """List all job applications."""
     jobs = JobApplication.get_all()
@@ -184,7 +200,6 @@ def create_job():
         job.save()
     except ValueError as e:
         print(f"Error: {e}")
-
 
 def update_job():
     """Prompt the user to update an existing job application."""
@@ -231,8 +246,6 @@ def update_job():
     except ValueError:
         print("Invalid input. Please enter a valid job application ID.")
 
-
-
 def delete_job():
     """Prompt the user to delete a job application."""
     job_id = input("Enter job application ID to delete: ").strip()
@@ -245,6 +258,74 @@ def delete_job():
             print(f"Job application ID {job_id} not found.")
     except ValueError:
         print("Invalid input. Please enter a valid job ID.")
+
+
+def show_companies():
+    """List all companies stored in the database."""
+    companies = Company.get_all()
+    if companies:
+        print("Companies: ")
+        for company in companies:
+            print(f"{company.id}: {company.name} {company.website}")
+    else:
+        print("No companies found.")
+
+def create_company():
+    """Prompt user to create new company"""
+    name = input("Enter company name: ")
+    website = input("Enter company website: ")
+    contact_info = input("Enter company contact info: ")
+
+    company = Company(name = name, website=website or None, contact_info=contact_info or None)
+    company.save()
+    print(f"{company.name} created successfully!")
+
+def update_company():
+    company_id = input("enter the company ID you want to update: ").strip()
+
+    try:
+        company_id = int(company_id)
+        company = Company.find_by_id(company_id)
+        if not company:
+            print(f"Comapny with ID: {company_id} not found.")
+            return
+        print(f"Updating company: {company.name}")
+        name = input(f"Enter new name (current: {company.name}): ").strip()
+        website = input(f"Enter new website (current: {company.website}): ").strip()
+        contact_info = input(f"Enter new contact info (current: {company.contact_info}): ").strip()
+
+        company.name = name if name else company.name
+        company.website = website if website else company.website
+        company.contact_info = contact_info if contact_info else company.contact_info
+    except ValueError:
+        print("Invalid input. Please enter a valid company ID.")
+
+def delete_company():
+    """Prompt the user to delete a company."""
+    company_id = input("Enter the company ID to delete: ").strip()
+
+    try:
+        company_id = int(company_id)
+        
+        # Ensure the companies table exists before querying it
+        Company.create_table()
+        
+        company = Company.find_by_id(company_id)
+        
+        if isinstance(company, Company):
+            company.delete()
+            print(f"Company with ID {company_id} ({company.name}) deleted successfully.")
+        elif company is None:
+            print(f"Company with ID {company_id} not found.")
+        else:
+            print(f"Error: {company}")  # If the returned result is an error message
+    except ValueError:
+        print("Invalid input. Please enter a valid company ID.")
+
+
+
+
+
 
 if __name__ == "__main__":
     main()
