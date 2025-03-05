@@ -25,15 +25,12 @@ def show_welcome():
     )
 
     console.print("\n[bold yellow]Quick Commands:[/bold yellow]")
-    console.print("  🎯 [cyan]create tag[/cyan] - Create a new tag")
-    console.print("  📝 [cyan]list tags[/cyan] - Show all saved tags")
-    console.print("  🔗 [cyan]assign tag[/cyan] - Link a tag to a job application")
     console.print("  🏢 [cyan]list jobs[/cyan] - Show all job applications")
     console.print("  🖊️ [cyan]create job[/cyan] - Create a new job application")
     console.print("  ✏️ [cyan]update job[/cyan] - Update an existing job application")
     console.print("  ❌ [red]delete job[/red] - Delete a job application")
     console.print("  ❓ [cyan]help[/cyan] - See all available commands")
-    console.print("  ❌ [red]exit[/red] - Quit the application\n")
+    console.print("[red]exit[/red] - Quit the application\n")
 
 def main():
     show_welcome()

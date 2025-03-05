@@ -8,8 +8,6 @@ import ipdb
 
 class JobApplicationTag:
 
-    #property setters validating int, must be existing record (use find_by_id method)
-
     def __init__(self, tag_id, job_id, id=None):
         self.id = id
         self.tag_id = tag_id
@@ -38,7 +36,6 @@ class JobApplicationTag:
         self._job_id = value
 
 #edit down prints
-
     @classmethod
     #indexing foreign keys?
     def create_table(cls):
