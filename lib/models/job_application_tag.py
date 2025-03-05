@@ -12,6 +12,22 @@ class JobApplicationTag:
         self.id = id
         self.tag_id = tag_id
         self.job_id = job_id
+
+
+    def job_application(self):
+        try:
+            return JobApplication.find_by_id(self.job_id)
+        except Exception as e:
+            print(f"Error retrieving job application for tag {self.id}: {e}")
+            return None
+
+    def tag(self):
+        try:
+            return Tag.find_by_id(self.tag_id)
+        except Exception as e:
+            print(f"Error retrieving tag for job application {self.job_id}: {e}")
+            return None
+
     
     @property
     def tag_id(self):
