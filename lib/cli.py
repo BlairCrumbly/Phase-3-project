@@ -6,6 +6,8 @@ from helpers import exit_program
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
+import ipdb
+
 
 console = Console()
 

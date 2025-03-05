@@ -10,5 +10,3 @@ import ipdb
 
 
 
-job = JobApplication.find_by_id(2)
-ipdb.set_trace()

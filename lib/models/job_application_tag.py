@@ -1,6 +1,7 @@
 from models.tag import Tag
 from models import CONN, CURSOR
 import sqlite3
+import ipdb
 
 
 #! _______ JOIN TABLE ___________
