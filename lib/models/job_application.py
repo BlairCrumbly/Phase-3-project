@@ -27,7 +27,7 @@ class JobApplication:
             job_tags = CURSOR.fetchall()
             return [JobApplicationTag(tag_id=job_tag[2], job_id=job_tag[1], id=job_tag[0]) for job_tag in job_tags]
         except sqlite3.Error as e:
-            print(f"Database error fetching job application tags: {e}")
+            raise ValueError(f"Database error while fetching job application tags: {e}")
             return []
 
         
