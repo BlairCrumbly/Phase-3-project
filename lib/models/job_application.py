@@ -26,6 +26,18 @@ class JobApplication:
         except:
             raise TypeError("UHOH")
 
+        
+    
+    def add_tag(self, tag_id):
+        """Associates the job with a tag and handles errors."""
+        try:
+            from models.job_application_tag import JobApplicationTag
+
+            JobApplicationTag.create(self.id, tag_id)
+            print(f"Tag {tag_id} successfully assigned to job {self.id}.")
+        except ValueError as e:
+            print(f"Error: {e}")
+
 
     @property
     def company_id(self):

@@ -118,14 +118,19 @@ def delete_tag():
         print("Invalid input. Please enter a valid tag ID.")
 
 def assign_tag_to_job():
-    """Assign a tag to a job application."""
+    """Assign a tag to a job application via JobApplication."""
     job_id = input("Enter job application ID: ").strip()
     tag_id = input("Enter tag ID: ").strip()
-    
+
     try:
         job_id, tag_id = int(job_id), int(tag_id)
-        JobApplicationTag(tag_id=tag_id, job_id=job_id).save()
-        print(f"Tag {tag_id} assigned to job {job_id}.")
+        job = JobApplication.find_by_id(job_id)
+
+        if not job:
+            print(f"Job application ID {job_id} not found.")
+            return
+        
+        job.add_tag(tag_id)
     except ValueError:
         print("Invalid input. Please enter valid numerical IDs.")
 
