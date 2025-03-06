@@ -21,42 +21,76 @@ from prompt_toolkit.styles import Style
 #look up a list of jobs by company
 
 console = Console()
-custom_style = Style.from_dict(
-    {
-        "dialog": "bg:#ffffff", 
-        "dialog frame.label": "bg:#444488 bold",  # Title bar with a blue tint
-        "dialog.body": "bg:#333333",  # Slightly lighter gray background
-        "menu": "bg:#444444",  # Custom menu background (corrected)
-        "radio.selected": "fg:#00ff00 bold",  # Selected item in bright green
-        "radio": "fg:#cccccc",  # Normal text color for menu items
-    }
-)
+# custom_style = Style.from_dict(
+#     {
+#         "dialog": "bg:#ffffff", 
+#         "dialog frame.label": "bg:#444488 bold",  # Title bar with a blue tint
+#         "dialog.body": "bg:#333333",  # Slightly lighter gray background
+#         "menu": "bg:#444444",  # Custom menu background (corrected)
+#         "radio.selected": "fg:#00ff00 bold",  # Selected item in bright green
+#         "radio": "fg:#cccccc",  # Normal text color for menu items
+#     }
+# )
+# def show_welcome():
+#     console.print(
+#             Panel.fit(
+#                 Text("💼 Job Application Tracker 💼", style="bold cyan"),
+#                 title="🚀 Welcome!", 
+#                 border_style="green"
+#             )
+#         )
+
+#     console.print(
+#             Panel(
+#                 "[bold cyan]Track your job applications, manage tags, and stay organized![/bold cyan]"
+#             )
+#         )
+#     return radiolist_dialog(
+#         title="📋 Job Tracker Menu",
+#         text="Use ↑↓ to navigate, Enter to select:",
+#         values=[
+#             ("list_jobs", "💼 List Jobs"),
+#             ("list_companies", "📊 List Companies"),
+#             ("create_job", "🖊️ Create Job"),
+#             ("help", "❓ Help"),
+#             ("exit", "👋 Exit"),
+#         ],
+#         style=custom_style, 
+#     ).run()
+
 def show_welcome():
-    console.print(
-            Panel.fit(
-                Text("💼 Job Application Tracker 💼", style="bold cyan"),
-                title="🚀 Welcome!", 
-                border_style="green"
-            )
-        )
+    """Display the welcome message and quick commands in a table format."""
+    console = Console()
 
     console.print(
-            Panel(
-                "[bold cyan]Track your job applications, manage tags, and stay organized![/bold cyan]"
-            )
+        Panel.fit(
+            Text("💼 Job Application Tracker 💼", style="bold cyan"),
+            title="🚀 Welcome!", 
+            border_style="green"
         )
-    return radiolist_dialog(
-        title="📋 Job Tracker Menu",
-        text="Use ↑↓ to navigate, Enter to select:",
-        values=[
-            ("list_jobs", "💼 List Jobs"),
-            ("list_companies", "📊 List Companies"),
-            ("create_job", "🖊️ Create Job"),
-            ("help", "❓ Help"),
-            ("exit", "👋 Exit"),
-        ],
-        style=custom_style,  # Apply the custom style
-    ).run()
+    )
+
+    console.print(
+        "[bold green]Track your job applications, manage tags, and stay organized![/bold green]"
+    )
+
+    table = Table(show_header=True, header_style="bold cyan", title="Quick Commands")
+    table.add_column("Command", style="bold yellow")
+    table.add_column("Description", style="white")
+
+    commands = [
+        ("🏢 list jobs", "Show all job applications"),
+        ("🖊️ create job", "Create a new job application"),
+        ("✏️ update job", "Update an existing job application"),
+        ("❌ delete job", "Delete a job application"),
+        ("❓ help", "See all available commands"),
+        ("[red]exit[/red]", "Quit the application"),
+    ]
+
+    for command, description in commands:
+        table.add_row(command, description)
+
+    console.print(table)
 
 
 def main():
@@ -210,14 +244,23 @@ def remove_tag_from_job():
 
 
 def list_jobs():
-    """List all job applications."""
+    """List all job applications as a table."""
     jobs = JobApplication.get_all()
+    console = Console()
+
     if not jobs:
         print("No job applications found.")
     else:
-        print("\nJob Applications:")
+        table = Table(title="Job Applications", show_header=True, header_style="bold cyan")
+        table.add_column("Job ID", style="bold yellow")
+        table.add_column("Job Title", style="white")
+        table.add_column("Status", style="green")
+
         for job in jobs:
-            print(f"  Job ID {job.id}: {job.job_title} - {job.status}")
+            table.add_row(str(job.id), job.job_title, job.status)
+
+        console.print(table)
+
 
 def create_job():
     """Prompt the user to create a new job application."""
@@ -343,15 +386,22 @@ def delete_job():
         print("Invalid input. Please enter a valid job ID.")
 
 
-def show_companies():
-    """List all companies stored in the database."""
+def list_companies():
+    """List all companies as a table."""
     companies = Company.get_all()
-    if companies:
-        print("Companies: ")
-        for company in companies:
-            print(f"{company.id}: {company.name}")
-    else:
+    console = Console()
+
+    if not companies:
         print("No companies found.")
+    else:
+        table = Table(title="Companies", show_header=True, header_style="bold cyan")
+        table.add_column("Company ID", style="bold yellow")
+        table.add_column("Company Name", style="white")
+
+        for company in companies:
+            table.add_row(str(company.id), company.name)
+
+        console.print(table)
 
 def create_company():
     """Prompt user to create new company"""
