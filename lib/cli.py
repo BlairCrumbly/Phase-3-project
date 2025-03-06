@@ -96,7 +96,7 @@ def main():
     show_welcome()
 
     while True:
-        command = input("\nEnter a command: ").strip().lower()
+        command = input("\n🏠 Enter a command: ").strip().lower()
         
         if command in ["exit", "quit"]:
             exit_program()
@@ -179,8 +179,8 @@ def list_tags():
 def create_tag():
     """Prompt the user to create a new tag."""
     try:
-        name = input("Enter tag name: ").strip()
-        tag_type = input("Enter tag type (location or length): ").strip().lower()
+        name = input("Enter tag name: ").strip().capitalize()
+        tag_type = input("Enter tag type (location or length): ").strip().capitalize()
         
         if tag_type not in ["location", "length"]:
             raise ValueError("Invalid tag type. Must be 'location' or 'length'.")
@@ -214,7 +214,9 @@ def delete_tag():
 
 def assign_tag_to_job():
     """Assign a tag to a job application via JobApplication."""
+    list_jobs()
     job_id = input("Enter job application ID: ").strip()
+    list_tags()
     tag_id = input("Enter tag ID: ").strip()
 
     try:
@@ -231,7 +233,9 @@ def assign_tag_to_job():
 
 def remove_tag_from_job():
     """Remove a tag from a job application."""
+    list_jobs()
     job_id = input("Enter job application ID: ").strip()
+    list_tags()
     tag_id = input("Enter tag ID: ").strip()
     
     try:
@@ -261,9 +265,9 @@ def list_jobs():
 
 def create_job():
     """Prompt the user to create a new job application."""
-    job_title = input("Enter job title: ").strip()
+    job_title = input("Enter job title: ").strip().capitalize()
     
-    company_name = input("Enter company name: ").strip()
+    company_name = input("Enter company name: ").strip().capitalize()
     
     company = Company.find_by_name(company_name)
     
@@ -271,15 +275,15 @@ def create_job():
         print(f"No company found with the name '{company_name}'")
         question = input("Would you like to create a company? (Y/N)").strip()
         if question.upper() == "Y":
-            website = input("Enter company website: ").strip()
-            contact_info = input("Enter company contact info: ").strip()
+            website = input("Enter company website: ").strip().lower()
+            contact_info = input("Enter company contact info: ").strip().lower()
             company = Company(name = company_name, website=website or None, contact_info=contact_info or None)
             company.save()
             print(f"{company.name} created successfully!")
         else:
             return
     
-    description = input("Enter job description: ").strip()
+    description = input("Enter job description: ").strip().lower()
     while True:
         date_applied_str = input("Enter date applied (YYYY-MM-DD): ").strip()
         try:
@@ -326,6 +330,7 @@ def create_job():
 
 def update_job():
     """Prompt the user to update an existing job application."""
+    list_jobs()
     job_id = input("Enter job application ID to update: ").strip()
 
     try:
@@ -339,8 +344,8 @@ def update_job():
         print(f"Updating job application: {job.job_title} at Company ID {job.company_id}")
 
         #
-        job_title = input(f"Enter new job title (current: {job.job_title}): ").strip()
-        company_name = input(f"Enter new company name (current: {job.company_id}): ").strip()
+        job_title = input(f"Enter new job title (current: {job.job_title}): ").strip().capitalize()
+        company_name = input(f"Enter new company name (current: {job.company_id}): ").strip().capitalize()
 
         # FETCH COMPANY WITH COMPANY NAME
         company = Company.find_by_name(company_name)
@@ -349,10 +354,10 @@ def update_job():
             print(f"No company found with the name '{company_name}'. Please ensure the company exists.")
             return
 
-        description = input(f"Enter new job description (current: {job.description}): ").strip()
+        description = input(f"Enter new job description (current: {job.description}): ").strip().lower()
         date_applied = input(f"Enter new date applied (current: {job.date_applied}): ").strip()
         last_follow_up = input(f"Enter new last follow-up date (current: {job.last_follow_up} or leave blank): ").strip()
-        status = input(f"Enter new status (current: {job.status}): ").strip()
+        status = input(f"Enter new status (current: {job.status}): ").strip().lower()
 
         try:
             job.job_title = job_title if job_title else job.job_title
@@ -402,15 +407,17 @@ def list_companies():
 
 def create_company():
     """Prompt user to create new company"""
-    name = input("Enter company name: ")
-    website = input("Enter company website: ")
-    contact_info = input("Enter company contact info: ")
+    name = input("Enter company name: ").strip().capitalize()
+    website = input("Enter company website: ").strip().lower()
+    contact_info = input("Enter company contact info: ").strip().lower()
 
     company = Company(name = name, website=website or None, contact_info=contact_info or None)
     company.save()
     print(f"{company.name} created successfully!")
 
 def update_company():
+    """Prompt the user to update a company."""
+    list_companies()
     company_id = input("enter the company ID you want to update: ").strip()
 
     try:
@@ -420,9 +427,9 @@ def update_company():
             print(f"Comapny with ID: {company_id} not found.")
             return
         print(f"Updating company: {company.name}")
-        name = input(f"Enter new name (current: {company.name}): ").strip()
-        website = input(f"Enter new website (current: {company.website}): ").strip()
-        contact_info = input(f"Enter new contact info (current: {company.contact_info}): ").strip()
+        name = input(f"Enter new name (current: {company.name}): ").strip().capitalize()
+        website = input(f"Enter new website (current: {company.website}): ").strip().lower()
+        contact_info = input(f"Enter new contact info (current: {company.contact_info}): ").strip().lower()
 
         company.name = name if name else company.name
         company.website = website if website else company.website
