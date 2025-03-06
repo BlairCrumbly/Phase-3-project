@@ -162,7 +162,7 @@ class JobApplication:
     def get_all(cls):
         """Fetch all job applications."""
         try:
-            CURSOR.execute("SELECT * FROM job_applications")
+            CURSOR.execute("SELECT id, job_title, status, company_id FROM job_applications")
             rows = CURSOR.fetchall()
             return [cls(*row) for row in rows] if rows else []
         except sqlite3.Error as e:

@@ -75,16 +75,15 @@ def show_welcome():
     )
 
     table = Table(show_header=True, header_style="bold cyan", title="Quick Commands")
-    table.add_column("Command", style="bold yellow")
+    table.add_column("Command", style="bold green")
     table.add_column("Description", style="white")
 
     commands = [
-        ("🏢 list jobs", "Show all job applications"),
+        ("💼 list jobs", "Show all job applications"),
+        ("📊 list companies", "Show all job companies"),
         ("🖊️ create job", "Create a new job application"),
-        ("✏️ update job", "Update an existing job application"),
-        ("❌ delete job", "Delete a job application"),
-        ("❓ help", "See all available commands"),
-        ("[red]exit[/red]", "Quit the application"),
+        ("❓ [yellow]help[/yellow]", "See all available commands"),
+        ("👋[red] exit[/red]", "Quit the application"),
     ]
 
     for command, description in commands:
@@ -124,7 +123,7 @@ def main():
         elif command == "delete job":
             delete_job()
         elif command == "list companies":
-            show_companies()
+            list_companies()
         elif command == "create company":
             create_company()
         elif command == "update company":
@@ -140,7 +139,7 @@ def show_help():
     console = Console()
     table = Table(title="Available Commands", show_header=True, header_style="bold cyan")
 
-    table.add_column("Command", style="bold orange")
+    table.add_column("Command", style="bold yellow")
     table.add_column("Description", style="white")
 
     commands = [
@@ -242,7 +241,6 @@ def remove_tag_from_job():
     except ValueError:
         print("Invalid input. Please enter valid numerical IDs.")
 
-
 def list_jobs():
     """List all job applications as a table."""
     jobs = JobApplication.get_all()
@@ -260,7 +258,6 @@ def list_jobs():
             table.add_row(str(job.id), job.job_title, job.status)
 
         console.print(table)
-
 
 def create_job():
     """Prompt the user to create a new job application."""
@@ -385,7 +382,6 @@ def delete_job():
     except ValueError:
         print("Invalid input. Please enter a valid job ID.")
 
-
 def list_companies():
     """List all companies as a table."""
     companies = Company.get_all()
@@ -436,13 +432,10 @@ def update_company():
 def delete_company():
     """Prompt the user to delete a company."""
     company_id = input("Enter the company ID to delete: ").strip()
-
+    
     try:
         company_id = int(company_id)
-        
-        # Ensure the companies table exists before querying it
-        Company.create_table()
-        
+
         company = Company.find_by_id(company_id)
         
         if isinstance(company, Company):
@@ -454,8 +447,6 @@ def delete_company():
             print(f"Error: {company}")  # If the returned result is an error message
     except ValueError:
         print("Invalid input. Please enter a valid company ID.")
-
-
 
 
 
