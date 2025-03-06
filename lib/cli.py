@@ -74,13 +74,23 @@ def show_welcome():
         "[bold green]Track your job applications, manage tags, and stay organized![/bold green]"
     )
 
-    console.print("\n[bold yellow]Quick Commands:[/bold yellow]")
-    console.print("  🏢 [cyan]list jobs[/cyan] - Show all job applications")
-    console.print("  🖊️ [cyan]create job[/cyan] - Create a new job application")
-    console.print("  ✏️ [cyan]update job[/cyan] - Update an existing job application")
-    console.print("  ❌ [red]delete job[/red] - Delete a job application")
-    console.print("  ❓ [cyan]help[/cyan] - See all available commands")
-    console.print("[red]exit[/red] - Quit the application\n")
+    table = Table(show_header=True, header_style="bold cyan", title="Quick Commands")
+    table.add_column("Command", style="bold green")
+    table.add_column("Description", style="white")
+
+    commands = [
+        ("💼 list jobs", "Show all job applications"),
+        ("📊 list companies", "Show all companies"),
+        ("🖊️ create job", "Create a new job application"),
+        ("❓ [yellow]help[/yellow]", "See all available commands"),
+        ("👋[red] exit[/red]", "Quit the application"),
+    ]
+
+    for command, description in commands:
+        table.add_row(command, description)
+
+    console.print(table)
+
 
 def main():
     show_welcome()
@@ -129,7 +139,7 @@ def show_help():
     console = Console()
     table = Table(title="Available Commands", show_header=True, header_style="bold cyan")
 
-    table.add_column("Command", style="bold yellow")
+    table.add_column("Command", style="bold orange")
     table.add_column("Description", style="white")
 
     commands = [
@@ -372,7 +382,7 @@ def show_companies():
     if companies:
         print("Companies: ")
         for company in companies:
-            print(f"{company.id}: {company.name} {company.website}")
+            print(f"{company.id}: {company.name}")
     else:
         print("No companies found.")
 
