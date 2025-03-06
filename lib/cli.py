@@ -150,8 +150,8 @@ def show_help():
         ("delete tag", "Remove a tag by ID"),
         ("assign tag", "Assign a tag to a job application"),
         ("remove tag", "Remove a tag from a job application"),
-        ("list jobs by tag", "Show jobs associated with a tag"),
         ("list jobs", "List all job applications"),
+        ("list jobs by tag", "Show jobs associated with a tag"),
         ("create job", "Add a new job application"),
         ("update job", "Update an existing job application"),
         ("delete job", "Remove a job application"),
@@ -371,6 +371,7 @@ def update_job():
 
 def delete_job():
     """Prompt the user to delete a job application."""
+    list_jobs()
     job_id = input("Enter job application ID to delete: ").strip()
     try:
         job_id = int(job_id)
@@ -431,6 +432,7 @@ def update_company():
 
 def delete_company():
     """Prompt the user to delete a company."""
+    list_companies()
     company_id = input("Enter the company ID to delete: ").strip()
     
     try:
@@ -448,7 +450,24 @@ def delete_company():
     except ValueError:
         print("Invalid input. Please enter a valid company ID.")
 
+def list_jobs_by_tag():
+    """List all job applications associated with a specific tag."""
+    list_tags()
+    tag_id = input("Enter tag ID to list jobs: ").strip()
 
+    try:
+        tag_id = int(tag_id)
+        tag = Tag.find_by_id(tag_id)
+        jobs = tag.job_applications()
+
+        if not jobs:
+            print("No job applications found with this tag.")
+        else:
+            print(f"Job Applications with Tag ID {tag_id}:")
+            for job in jobs:
+                print(f"  {job.id}: {job.job_title}")
+    except ValueError:
+        print("Invalid input. Please enter a valid tag ID.")
 
 
 if __name__ == "__main__":

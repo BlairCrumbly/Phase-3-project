@@ -10,19 +10,31 @@ class Tag:
     def __init__(self, name, tag_type, id=None):
         self.id = id
         self.name = name
-        self.tag_type = tag_type  
+        self.tag_type = tag_type
 
 
-    def job_applications(self):
+    def job_application_tags(self):
         try:
+            from models.job_application_tag import JobApplicationTag
             CURSOR.execute("""
             SELECT * FROM job_application_tags WHERE tag_id == ?
             """, (self.id,))
             job_app_tags = CURSOR.fetchall()
-            return [JobApplication.find_by_id(job_app_tag[1]) for job_app_tag in job_app_tags]
+            return [
+                JobApplicationTag(id=job_app_tag[0], job_id=job_app_tag[1], tag_id=job_app_tag[2])
+                for job_app_tag in job_app_tags
+            ]
         except Exception as e:
-            print(f"Error retrieving job applications for tag {self.id}: {e}")
-            return []
+            return(f"Error retrieving job applications for tag {self.id}: {e}")
+    
+    def job_applications(self):
+        try:
+            from models.job_application_tag import JobApplicationTag
+            return [
+                job_app_tag.job_application() for job_app_tag in self.job_application_tags()
+            ]
+        except Exception as e:
+            return(f"Error retrieving job applications for tag {self.id}: {e}")
 
     @property
     def name(self):
@@ -117,3 +129,4 @@ class Tag:
         CURSOR.execute("SELECT * FROM tags WHERE id = ?", (id,))
         row = CURSOR.fetchone()
         return cls(id=row[0], name=row[1], tag_type=row[2]) if row else None
+

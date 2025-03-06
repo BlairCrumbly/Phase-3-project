@@ -19,17 +19,27 @@ class JobApplication:
 
 #association methods
     def job_application_tags(self):
-        """Retrieve tags associated with the job application."""
+            try:
+                from models.job_application_tag import JobApplicationTag
+                CURSOR.execute("""
+                SELECT * FROM job_application_tags WHERE tag_id == ?
+                """, (self.id,))
+                job_app_tags = CURSOR.fetchall()
+                return [
+                    JobApplicationTag(id=job_app_tag[0], job_id=job_app_tag[1], tag_id=job_app_tag[2])
+                    for job_app_tag in job_app_tags
+                ]
+            except Exception as e:
+                return(f"Error retrieving job applications for tag {self.id}: {e}")
+    
+    def job_applications(self):
         try:
-            CURSOR.execute("""
-            SELECT * FROM job_application_tags WHERE job_id = ? 
-            """, (self.id,))
-            job_tags = CURSOR.fetchall()
-            return [JobApplicationTag(tag_id=job_tag[2], job_id=job_tag[1], id=job_tag[0]) for job_tag in job_tags]
-        except sqlite3.Error as e:
-            raise ValueError(f"Database error while fetching job application tags: {e}")
-            return []
-
+            from models.job_application_tag import JobApplicationTag
+            return [
+                job_app_tag.job_application() for job_app_tag in self.job_application_tags()
+            ]
+        except Exception as e:
+            return(f"Error retrieving job applications for tag {self.id}: {e}")
         
     
     def add_tag(self, tag_id):
@@ -162,12 +172,26 @@ class JobApplication:
     def get_all(cls):
         """Fetch all job applications."""
         try:
-            CURSOR.execute("SELECT id, job_title, status, company_id FROM job_applications")
+            CURSOR.execute("SELECT * FROM job_applications")
             rows = CURSOR.fetchall()
-            return [cls(*row) for row in rows] if rows else []
+            return (
+                [
+                    cls(
+                        job_title=row[1],
+                        company_id=row[2],
+                        description=row[3],
+                        date_applied=row[4],
+                        last_follow_up=row[5],
+                        status=row[6],
+                        id=row[0],
+                    )
+                    for row in rows
+                ]
+                if rows
+                else []
+            )
         except sqlite3.Error as e:
-            print(f"An error occurred while fetching all job applications: {e}")
-            return []
+            return(f"An error occurred while fetching all job applications: {e}")
 
 #use kwargs!!!
     def update(self, **kwargs):

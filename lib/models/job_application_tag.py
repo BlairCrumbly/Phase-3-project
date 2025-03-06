@@ -16,6 +16,7 @@ class JobApplicationTag:
 
     def job_application(self):
         try:
+            from models.job_application import JobApplication
             return JobApplication.find_by_id(self.job_id)
         except Exception as e:
             print(f"Error retrieving job application for tag {self.id}: {e}")
