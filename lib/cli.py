@@ -13,45 +13,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import radiolist_dialog
 from prompt_toolkit.styles import Style
 
-# console = Console()
-# custom_style = Style.from_dict(
-#     {
-#         "dialog": "bg:#222222",  # Dark background
-#         "dialog frame.label": "bg:#444488 bold",  # Title bar with a blue tint
-#         "dialog.body": "bg:#333333",  # Slightly lighter gray background
-#         "menu": "bg:#444444",  # Custom menu background (corrected)
-#         "radio.selected": "fg:#00ff00 bold",  # Selected item in bright green
-#         "radio": "fg:#cccccc",  # Normal text color for menu items
-#     }
-# )
-# def show_welcome():
-#     console.print(
-#         Panel.fit(
-#             Text("💼 Job Application Tracker 💼", style="bold cyan"),
-#             title="🚀 Welcome!", 
-#             border_style="green"
-#         )
-#     )
-
-#     console.print(
-#         Panel(
-#             "[bold cyan]Track your job applications, manage tags, and stay organized![/bold cyan]"
-#         )
-#     )
-#     return radiolist_dialog(
-#         title="📋 Job Tracker Menu",
-#         text="Use ↑↓ to navigate, Enter to select:",
-#         values=[
-#             ("list_jobs", "🏢 List Jobs"),
-#             ("create_job", "🖊️ Create Job"),
-#             ("update_job", "✏️ Update Job"),
-#             ("delete_job", "❌ Delete Job"),
-#             ("help", "❓ Help"),
-#             ("exit", "🚪 Exit"),
-#         ],
-#         style=custom_style,  # Apply the custom style
-#     ).run()
-
 
 
 #returns a table for all jobs and and all companies, etc
@@ -60,36 +21,42 @@ from prompt_toolkit.styles import Style
 #look up a list of jobs by company
 
 console = Console()
-
+custom_style = Style.from_dict(
+    {
+        "dialog": "bg:#ffffff", 
+        "dialog frame.label": "bg:#444488 bold",  # Title bar with a blue tint
+        "dialog.body": "bg:#333333",  # Slightly lighter gray background
+        "menu": "bg:#444444",  # Custom menu background (corrected)
+        "radio.selected": "fg:#00ff00 bold",  # Selected item in bright green
+        "radio": "fg:#cccccc",  # Normal text color for menu items
+    }
+)
 def show_welcome():
     console.print(
-        Panel.fit(
-            Text("💼 Job Application Tracker 💼", style="bold cyan"),
-            title="🚀 Welcome!", 
-            border_style="green"
+            Panel.fit(
+                Text("💼 Job Application Tracker 💼", style="bold cyan"),
+                title="🚀 Welcome!", 
+                border_style="green"
+            )
         )
-    )
 
     console.print(
-        "[bold green]Track your job applications, manage tags, and stay organized![/bold green]"
-    )
-
-    table = Table(show_header=True, header_style="bold cyan", title="Quick Commands")
-    table.add_column("Command", style="bold green")
-    table.add_column("Description", style="white")
-
-    commands = [
-        ("💼 list jobs", "Show all job applications"),
-        ("📊 list companies", "Show all companies"),
-        ("🖊️ create job", "Create a new job application"),
-        ("❓ [yellow]help[/yellow]", "See all available commands"),
-        ("👋[red] exit[/red]", "Quit the application"),
-    ]
-
-    for command, description in commands:
-        table.add_row(command, description)
-
-    console.print(table)
+            Panel(
+                "[bold cyan]Track your job applications, manage tags, and stay organized![/bold cyan]"
+            )
+        )
+    return radiolist_dialog(
+        title="📋 Job Tracker Menu",
+        text="Use ↑↓ to navigate, Enter to select:",
+        values=[
+            ("list_jobs", "💼 List Jobs"),
+            ("list_companies", "📊 List Companies"),
+            ("create_job", "🖊️ Create Job"),
+            ("help", "❓ Help"),
+            ("exit", "👋 Exit"),
+        ],
+        style=custom_style,  # Apply the custom style
+    ).run()
 
 
 def main():
