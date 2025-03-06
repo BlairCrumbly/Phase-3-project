@@ -7,10 +7,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 import ipdb
+from models import CONN
 
 
 console = Console()
-
+CONN.execute("PRAGMA foreign_keys = ON")
+CONN.commit()
 def show_welcome():
     console.print(
         Panel.fit(
@@ -180,8 +182,17 @@ def create_job():
     company = Company.find_by_name(company_name)
     
     if not company:
-        print(f"No company found with the name '{company_name}'. Please ensure the company exists.")
-        return
+        print(f"No company found with the name '{company_name}'")
+        question = input("Would you like to create a company? (Y/N)").strip()
+        if question.upper() == "Y":
+            website = input("Enter company website: ").strip()
+            contact_info = input("Enter company contact info: ").strip()
+            company = Company(name = company_name, website=website or None, contact_info=contact_info or None)
+            company.save()
+            print(f"{company.name} created successfully!")
+        else:
+            return
+
     
     description = input("Enter job description: ").strip()
     date_applied = input("Enter date applied (YYYY-MM-DD): ").strip()
@@ -259,7 +270,6 @@ def delete_job():
     except ValueError:
         print("Invalid input. Please enter a valid job ID.")
 
-
 def show_companies():
     """List all companies stored in the database."""
     companies = Company.get_all()
@@ -303,13 +313,10 @@ def update_company():
 def delete_company():
     """Prompt the user to delete a company."""
     company_id = input("Enter the company ID to delete: ").strip()
-
+    
     try:
         company_id = int(company_id)
-        
-        # Ensure the companies table exists before querying it
-        Company.create_table()
-        
+
         company = Company.find_by_id(company_id)
         
         if isinstance(company, Company):
@@ -321,11 +328,6 @@ def delete_company():
             print(f"Error: {company}")  # If the returned result is an error message
     except ValueError:
         print("Invalid input. Please enter a valid company ID.")
-
-
-
-
-
 
 if __name__ == "__main__":
     main()

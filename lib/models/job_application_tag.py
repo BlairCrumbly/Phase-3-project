@@ -62,7 +62,7 @@ class JobApplicationTag:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             job_id INTEGER NOT NULL,
             tag_id INTEGER NOT NULL,
-            FOREIGN KEY (job_id) REFERENCES job_applications(id) ON DELETE CASCADE,
+            FOREIGN KEY (job_id) REFERENCES job_applications(job_id) ON DELETE CASCADE,
             FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
             )
             """)
@@ -139,5 +139,5 @@ class JobApplicationTag:
             print(f"Tag {tag_id} removed from job {job_id}.")
         except Exception as e:
             print(f"Error removing tag: {e}")
-            
+
 from models.job_application import JobApplication

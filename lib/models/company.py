@@ -142,8 +142,7 @@ class Company:
          
         try:
             CURSOR.execute("""
-                SELECT company_id
-                FROM job_applications
+                SELECT company_id FROM job_applications
                 JOIN companies ON job_applications.company_id = companies.id
                 GROUP BY company_id
                 ORDER BY COUNT(*) DESC
@@ -162,9 +161,6 @@ class Company:
 
 
 #!association methods
-
-#todo make method that fetches related JobApplication instances
-#todo make add_job_application method to assocaite JobApplication instance with a company
 
 
     def job_applications(self):

@@ -107,7 +107,7 @@ class JobApplication:
                 date_applied DATE,
                 last_follow_up DATE,
                 status TEXT CHECK(status IN ('applied', 'pending', 'rejected', 'offer')),
-                FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE cascade
+                FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE cascade
             )
             """)
             CONN.commit()
@@ -123,7 +123,7 @@ class JobApplication:
             INSERT INTO job_applications (job_title, company_id, description, date_applied, last_follow_up, status)
             VALUES (?, ?, ?, ?, ?, ?)
             """, (self.job_title, self.company_id, self.description, self.date_applied, self.last_follow_up, self.status))
-            CONN.commit()  
+            CONN.commit() 
             self.id = CURSOR.lastrowid
             print(f"Job application '{self.job_title}' saved successfully with ID {self.id}.")
         except sqlite3.IntegrityError as e:
