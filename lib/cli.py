@@ -5,9 +5,59 @@ from models.job_application_tag import JobApplicationTag
 from helpers import exit_program
 from rich.console import Console
 from rich.panel import Panel
+from rich.prompt import Prompt
 from rich.text import Text
+from rich.table import Table
 import ipdb
+from prompt_toolkit import prompt
+from prompt_toolkit.shortcuts import radiolist_dialog
+from prompt_toolkit.styles import Style
 
+# console = Console()
+# custom_style = Style.from_dict(
+#     {
+#         "dialog": "bg:#222222",  # Dark background
+#         "dialog frame.label": "bg:#444488 bold",  # Title bar with a blue tint
+#         "dialog.body": "bg:#333333",  # Slightly lighter gray background
+#         "menu": "bg:#444444",  # Custom menu background (corrected)
+#         "radio.selected": "fg:#00ff00 bold",  # Selected item in bright green
+#         "radio": "fg:#cccccc",  # Normal text color for menu items
+#     }
+# )
+# def show_welcome():
+#     console.print(
+#         Panel.fit(
+#             Text("💼 Job Application Tracker 💼", style="bold cyan"),
+#             title="🚀 Welcome!", 
+#             border_style="green"
+#         )
+#     )
+
+#     console.print(
+#         Panel(
+#             "[bold cyan]Track your job applications, manage tags, and stay organized![/bold cyan]"
+#         )
+#     )
+#     return radiolist_dialog(
+#         title="📋 Job Tracker Menu",
+#         text="Use ↑↓ to navigate, Enter to select:",
+#         values=[
+#             ("list_jobs", "🏢 List Jobs"),
+#             ("create_job", "🖊️ Create Job"),
+#             ("update_job", "✏️ Update Job"),
+#             ("delete_job", "❌ Delete Job"),
+#             ("help", "❓ Help"),
+#             ("exit", "🚪 Exit"),
+#         ],
+#         style=custom_style,  # Apply the custom style
+#     ).run()
+
+
+
+#returns a table for all jobs and and all companies, etc
+#reprint menu when optimal
+#multiple excepts for as many specific errors as possible
+#look up a list of jobs by company
 
 console = Console()
 
@@ -73,28 +123,38 @@ def main():
         else:
             print("Invalid command. Type 'help' for a list of available commands.")
 
+
 def show_help():
-    """Display available commands."""
-    print("\nAvailable Commands:")
-    print("  exit / quit           - Exit the program")
-    print("  help / ?              - Show this help menu")
+    """Display available commands in a table format."""
+    console = Console()
+    table = Table(title="Available Commands", show_header=True, header_style="bold cyan")
 
-    print("  list tags             - Show all available tags")
-    print("  create tag            - Add a new tag")
-    print("  delete tag            - Remove a tag by ID")
-    print("  assign tag            - Assign a tag to a job application")
-    print("  remove tag            - Remove a tag from a job application")
+    table.add_column("Command", style="bold yellow")
+    table.add_column("Description", style="white")
 
-    print("  list jobs by tag      - Show jobs associated with a tag")
-    print("  list jobs             - List all job applications")
-    print("  create job            - Add a new job application")
-    print("  update job            - Update an existing job application")
-    print("  delete job            - Remove a job application")
+    commands = [
+        ("exit / quit", "Exit the program"),
+        ("help / ?", "Show this help menu"),
+        ("list tags", "Show all available tags"),
+        ("create tag", "Add a new tag"),
+        ("delete tag", "Remove a tag by ID"),
+        ("assign tag", "Assign a tag to a job application"),
+        ("remove tag", "Remove a tag from a job application"),
+        ("list jobs by tag", "Show jobs associated with a tag"),
+        ("list jobs", "List all job applications"),
+        ("create job", "Add a new job application"),
+        ("update job", "Update an existing job application"),
+        ("delete job", "Remove a job application"),
+        ("list companies", "Show all companies"),
+        ("create company", "Add a new company"),
+        ("update company", "Update an existing company"),
+        ("delete company", "Remove a company"),
+    ]
 
-    print("  list companies        - Show all companies")
-    print("  create company        - Add a new company")
-    print("  update company        - Update an existing company")
-    print("  delete company        - Remove a company")
+    for command, description in commands:
+        table.add_row(command, description)
+
+    console.print(table)
 
 def list_tags():
     """List all tags stored in the database."""
@@ -108,16 +168,27 @@ def list_tags():
 
 def create_tag():
     """Prompt the user to create a new tag."""
-    name = input("Enter tag name: ").strip()
-    tag_type = input("Enter tag type (location or length): ").strip().lower()
-    
-    if tag_type not in ["location", "length"]:
-        print("Invalid tag type. Must be 'location' or 'length'.")
-        return
+    try:
+        name = input("Enter tag name: ").strip()
+        tag_type = input("Enter tag type (location or length): ").strip().lower()
+        
+        if tag_type not in ["location", "length"]:
+            raise ValueError("Invalid tag type. Must be 'location' or 'length'.")
 
-    tag = Tag(name=name, tag_type=tag_type)
-    tag.save()
-    print(f"Tag '{name}' added successfully.")
+        tag = Tag(name=name, tag_type=tag_type)
+        
+        tag.save()
+        if tag.id:
+            print(f"Tag '{name}' added successfully.")
+
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+    except AttributeError as ae:
+        print(f"AttributeError: {ae} - Check if yourinputs are correctly formatted.")
+    except TypeError as te:
+        print(f"TypeError: {te} - Unexpected data type encountered.")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
 def delete_tag():
     """Prompt the user to delete a tag."""
@@ -180,13 +251,48 @@ def create_job():
     company = Company.find_by_name(company_name)
     
     if not company:
-        print(f"No company found with the name '{company_name}'. Please ensure the company exists.")
-        return
+        print(f"No company found with the name '{company_name}'")
+        question = input("Would you like to create a company? (Y/N)").strip()
+        if question.upper() == "Y":
+            website = input("Enter company website: ").strip()
+            contact_info = input("Enter company contact info: ").strip()
+            company = Company(name = company_name, website=website or None, contact_info=contact_info or None)
+            company.save()
+            print(f"{company.name} created successfully!")
+        else:
+            return
     
     description = input("Enter job description: ").strip()
-    date_applied = input("Enter date applied (YYYY-MM-DD): ").strip()
-    last_follow_up = input("Enter last follow-up date (YYYY-MM-DD or leave blank): ").strip()
-    status = input("Enter job status (applied, pending, rejected, offer): ").strip()
+    while True:
+        date_applied_str = input("Enter date applied (YYYY-MM-DD): ").strip()
+        try:
+            date_applied = datetime.strptime(date_applied_str, "%Y-%m-%d").date()
+            break  # Valid date, exit loop
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+
+    
+    last_follow_up = None
+    while True:
+        last_follow_up_str = input("Enter last follow-up date (YYYY-MM-DD or leave blank): ").strip()
+        if not last_follow_up_str:
+            break #PROCEED
+        try:
+            last_follow_up = datetime.strptime(last_follow_up_str, "%Y-%m-%d").date()
+            if last_follow_up < date_applied:
+                print("Last follow-up date cannot be before the date applied. Please enter a valid date.")
+            else:
+                break  #EXIT LOOP
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+
+
+    valid_statuses = ["applied", "pending", "rejected", "offer"]
+    status = input("Enter job status (applied, pending, rejected, offer): ").strip().lower()
+    
+    while status not in valid_statuses:
+        print("Invalid status. Please enter one of the following: applied, pending, rejected, offer.")
+        status = input("Enter job status (applied, pending, rejected, offer): ").strip().lower()
 
     try:
         job = JobApplication(

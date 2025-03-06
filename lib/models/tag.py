@@ -1,6 +1,7 @@
 from models import CONN, CURSOR
 import sqlite3
 import ipdb
+from sqlite3 import IntegrityError
 
 
 class Tag:
@@ -67,8 +68,9 @@ class Tag:
             CONN.commit()
             self.id = CURSOR.lastrowid  # Set the object's ID after insertion
             print(f"Tag '{self.name}' saved successfully.")
-        except sqlite3.Error as e:
-            print(f"An error occurred while saving the tag: {e}")
+        except IntegrityError as e:
+            print("IntegrityError: {e} - This tag already exists or violates a database constraint.")
+        
 
     @classmethod
     def get_all(cls):
