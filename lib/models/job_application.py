@@ -98,6 +98,8 @@ class JobApplication:
 
     def _validate_date(self, date):
         """Check if the date is in YYYY-MM-DD format and valid."""
+        if isinstance(date, datetime.date):
+            return True  # Already a valid date object
         try:
             datetime.strptime(date, "%Y-%m-%d")
             return True
