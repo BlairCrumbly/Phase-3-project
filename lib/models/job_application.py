@@ -3,7 +3,7 @@ from models.company import Company
 from models.job_application_tag import JobApplicationTag
 import sqlite3
 import ipdb
-from datetime import datetime
+from datetime import datetime, date
 
 class JobApplication:
     VALID_STATUSES = {'applied', 'pending', 'rejected', 'offer'}
@@ -96,12 +96,12 @@ class JobApplication:
             raise ValueError(f"Invalid date format: {value}. Use YYYY-MM-DD or leave empty.")
         self._last_follow_up = value
 
-    def _validate_date(self, date):
+    def _validate_date(self, date_value):
         """Check if the date is in YYYY-MM-DD format and valid."""
-        if isinstance(date, datetime.date):
+        if isinstance(date_value, date):
             return True  # Already a valid date object
         try:
-            datetime.strptime(date, "%Y-%m-%d")
+            datetime.strptime(date_value, "%Y-%m-%d")
             return True
         except ValueError:
             return False
